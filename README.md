@@ -1,32 +1,39 @@
-# A-Maze-ing-
+# A-Maze-Ing
 
+Proyecto de generación, validación y resolución de laberintos en Python, con soporte para renderizado ASCII y gráfico, animaciones y pruebas unitarias.
+
+---
+
+## Estructura del proyecto
+
+```text
 project/
 ├── core/
-│   ├── _init_.py
+│   ├── __init__.py
 │   ├── cell.py
 │   ├── maze.py
 │   └── solver.py
 ├── generators/
-│   ├── _init_.py
+│   ├── __init__.py
 │   ├── maze_generator.py     
 │   └── algorithms.py        
 ├── render/
-│   ├── _init_.py
+│   ├── __init__.py
 │   ├── render.py             
 │   ├── ascii.py
 │   └── graphic.py
 ├── config/
-│   ├── _init_.py
+│   ├── __init__.py
 │   ├── parser.py
 │   └── validator.py
 ├── validations/
-│   ├── _init_.py
+│   ├── __init__.py
 │   └── maze_validation.py
 ├── animations/
-│   ├── _init_.py
+│   ├── __init__.py
 │   └── animator.py
 ├── tests/
-│   ├── _init_.py
+│   ├── __init__.py
 │   ├── test_maze.py
 │   ├── test_cell.py
 │   ├── test_generator.py
