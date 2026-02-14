@@ -1,34 +1,37 @@
 # A-Maze-ing-
 
---AMAZING
-    __init__.py              //para control de paquetes
-    --core
-        -generator.py        //algoritmos
-        -maze.py             //tablero
-        -cell.py             //casilla
-        -solver.py           //resuelve el camino
-
-    --validation
-        -validate.py         //controles de error
-
-    --utils
-        -parser.py           //parseo
-
-    --visual
-        -terminal.py         //vista ascii
-        -graphic.py          //vista grafica
-
-    --bonus
-        -effects.py          //animaciones
-
-    --tests
-                             //pytest or unittest  framework de testeo
-        test_generator.py    //testeo de algoritmos 
-        test_maze.py         //testeo de tablero
-        test_cell.py         //testeo de celda
-        test_solver.py       //testeo de resolución
-
-    a_maze_ing.py            // programa principal
-    config.txt               //fichero de config
-    .gitignore               //exclude Python artifacts
-    makefile
+project/
+├── core/
+│   ├── _init_.py
+│   ├── cell.py
+│   ├── maze.py
+│   └── solver.py
+├── generators/
+│   ├── _init_.py
+│   ├── maze_generator.py     
+│   └── algorithms.py        
+├── render/
+│   ├── _init_.py
+│   ├── render.py             
+│   ├── ascii.py
+│   └── graphic.py
+├── config/
+│   ├── _init_.py
+│   ├── parser.py
+│   └── validator.py
+├── validations/
+│   ├── _init_.py
+│   └── maze_validation.py
+├── animations/
+│   ├── _init_.py
+│   └── animator.py
+├── tests/
+│   ├── _init_.py
+│   ├── test_maze.py
+│   ├── test_cell.py
+│   ├── test_generator.py
+│   └── test_solver.py
+├── a_maze_ing.py
+├── config.txt
+├── .gitignore
+└── makefile
