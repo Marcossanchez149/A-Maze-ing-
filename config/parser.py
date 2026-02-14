@@ -49,24 +49,19 @@ def parse_config_file(path: str) -> Dict[str,
     """
     config = {}
 
-    try:
-        with open(path, "r") as f:
+    with open(path, "r") as f:
 
-            for line in f:
+        for line in f:
 
-                line = line.strip()
+            line = line.strip()
 
-                if not line or line.startswith("#"):
-                    continue
+            if not line or line.startswith("#"):
+                continue
 
-                if "=" not in line:
-                    raise ValueError(f"Invalid line: {line}")
+            if "=" not in line:
+                raise ValueError(f"Invalid line: {line}")
 
-                key, value = line.split("=", 1)
-                config[key.strip().lower()] = convert_value(value)
+            key, value = line.split("=", 1)
+            config[key.strip().lower()] = convert_value(value)
 
-        return config
-
-    except FileNotFoundError:
-        print(f"ERROR: file {path} not found.\n")
-        return {}
+    return config
