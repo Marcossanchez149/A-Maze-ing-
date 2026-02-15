@@ -81,6 +81,48 @@ class Maze:
             raise IndexError(f"Cell coordinates out of bounds: ({x}, {y})")
         return self.grid[y][x]
 
+    def remove_wall_between(self, cell1: Cell, cell2: Cell) -> None:
+        """
+        Removes the wall between two adjacent cells to create a passage,
+        ensuring consistency by removing the corresponding walls on both cells.
+
+        The method checks the relative position of the two cells and removes
+        the appropriate walls:
+        - If cell2 is to the right of cell1, remove the east wall of cell1
+        and the west wall of cell2.
+        - If cell2 is to the left of cell1, remove the west wall of cell1
+        and the east wall of cell2.
+        - If cell2 is below cell1, remove the south wall of cell1 and the
+        north wall of cell2.
+        - If cell2 is above cell1, remove the north wall of cell1 and the
+        south wall of cell2.
+
+        Args:
+            cell1 (Cell): The first cell.
+            cell2 (Cell): The second cell, adjacent to the first one.
+
+        Raises:
+            ValueError: If the two cells are not adjacent.
+        """
+
+        dx = cell2.x - cell1.x
+        dy = cell2.y - cell1.y
+
+        if dx == 1 and dy == 0:  # cell2 derecha
+            cell1.remove_wall("E")
+            cell2.remove_wall("W")
+        elif dx == -1 and dy == 0:  # cell2 izquierda
+            cell1.remove_wall("W")
+            cell2.remove_wall("E")
+        elif dx == 0 and dy == 1:  # cell2 abajo
+            cell1.remove_wall("S")
+            cell2.remove_wall("N")
+        elif dx == 0 and dy == -1:  # cell2 arriba
+            cell1.remove_wall("N")
+            cell2.remove_wall("S")
+        else:
+            raise ValueError("Cells are not adjacent")
+
     def _open_external_walls(self) -> None:
         """
         Adds walls to the outer border cells of the maze.
@@ -94,7 +136,7 @@ class Maze:
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.grid[y][x]
-                
+
                 if y == 0:
                     if x > 0:
                         cell.remove_wall("W")
@@ -110,19 +152,18 @@ class Maze:
                     cell.remove_wall("N")
 
                 elif x == 0:
-                    cell.remove_wall("W")
-                    if y > 0:
-                        cell.remove_wall("N")
-                    if y < self.height - 1:
-                        cell.remove_wall("S")
-
-                elif x == self.width - 1:
                     cell.remove_wall("E")
                     if y > 0:
                         cell.remove_wall("N")
                     if y < self.height - 1:
                         cell.remove_wall("S")
 
+                elif x == self.width - 1:
+                    cell.remove_wall("W")
+                    if y > 0:
+                        cell.remove_wall("N")
+                    if y < self.height - 1:
+                        cell.remove_wall("S")
 
     def print_hex(self) -> None:
         for y in range(self.height):
