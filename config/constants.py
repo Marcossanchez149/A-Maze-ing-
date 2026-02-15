@@ -14,3 +14,7 @@ REQUIRED_KEYS = {
     "display",
     "seed",
 }
+
+ALGORITHMS = {"backtracking", "dfs", "bfs"}
+
+DISPLAYS = {"ascii", "graphic"}
