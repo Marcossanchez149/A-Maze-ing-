@@ -15,6 +15,12 @@ REQUIRED_KEYS = {
     "seed",
 }
 
-ALGORITHMS = {"backtracking", "dfs", "bfs"}
+ALGORITHMS = {"backtracking", "prim", "kruskal"}
 
 DISPLAYS = {"ascii", "graphic"}
+
+POSITIVE_INT = {"width", "height", "seed"}
+
+BOOL = {"perfect"}
+
+TUPLES = {"entry", "exit"}
