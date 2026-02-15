@@ -25,6 +25,7 @@ project/
 ├── config/
 │   ├── __init__.py
 │   ├── parser.py
+│   ├── types.py
 │   └── validator.py
 ├── validations/
 │   ├── __init__.py
