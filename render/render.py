@@ -30,6 +30,7 @@ class Render(ABC):
         :param self: own instance
         :param cell: cell to draw
         """
+        pass
 
     @abstractmethod
     def clear(self):
@@ -38,3 +39,4 @@ class Render(ABC):
 
         :param self: own instance
         """
+        pass
