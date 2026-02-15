@@ -1,5 +1,5 @@
 """
-types 
+types
 Contains types used by render
 """
 

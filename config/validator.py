@@ -57,7 +57,8 @@ def validate_tuples(config: ConfigDict, key: str) -> None:
         key (str): The key to validate in the config.
 
     Raises:
-        ValueError: If the value is not a tuple of length 2, or any element is not a positive integer.
+        ValueError: If the value is not a tuple of length 2,
+        or any element is not a positive integer.
     """
     value = config[key]
 
@@ -71,7 +72,8 @@ def validate_tuples(config: ConfigDict, key: str) -> None:
 
 def validate_str(config: ConfigDict, key: str, allowed: set[str]) -> None:
     """
-    Validate that a config key contains a string within a set of allowed values.
+    Validate that a config key contains a
+    string within a set of allowed values.
 
     Args:
         config (ConfigDict): The configuration dictionary.
