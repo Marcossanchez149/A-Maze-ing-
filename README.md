@@ -28,9 +28,6 @@ project/
 │   ├── parser.py
 │   ├── types.py
 │   └── validator.py
-├── validations/
-│   ├── __init__.py
-│   └── maze_validation.py
 ├── animations/
 │   ├── __init__.py
 │   └── animator.py
