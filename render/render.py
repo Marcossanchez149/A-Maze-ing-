@@ -7,6 +7,7 @@ Defines contract for render
 from abc import ABC, abstractmethod
 
 
+# TO FIX
 class Render(ABC):
     """
     Render
