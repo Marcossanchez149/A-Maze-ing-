@@ -6,10 +6,11 @@ Draw a maze using ascii , based on Render class
 
 from .render import Render
 
-#Por implementar
+
+# TO FIX
 class AsciiRender(Render):
     """
-    AsciiRender class that implements how to draw a maze 
+    AsciiRender class that implements how to draw a maze
     with ascii characters
     """
     def draw_maze(self, maze):
