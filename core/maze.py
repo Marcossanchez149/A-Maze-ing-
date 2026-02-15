@@ -61,7 +61,7 @@ class Maze:
             [Cell(x, y) for x in range(width)] for y in range(height)
         ]
 
-        self._add_border_walls()
+        self._open_external_walls()
 
     def get_cell(self, x: int, y: int) -> Cell:
         """
@@ -81,32 +81,53 @@ class Maze:
             raise IndexError(f"Cell coordinates out of bounds: ({x}, {y})")
         return self.grid[y][x]
 
-    def _add_border_walls(self) -> None:
+    def _open_external_walls(self) -> None:
         """
         Adds walls to the outer border cells of the maze.
 
         Each cell on the edge of the maze will have a wall facing outward:
             - 'N' for north/top
             - 'S' for south/bottom
-            - 'O' for west/left (probably stands for 'Ouest')
+            - 'W' for west/left
             - 'E' for east/right
         """
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.grid[y][x]
+                
                 if y == 0:
-                    cell.add_wall("N")
-                if y == self.height - 1:
-                    cell.add_wall("S")
-                if x == 0:
-                    cell.add_wall("O")
-                if x == self.width - 1:
-                    cell.add_wall("E")
+                    if x > 0:
+                        cell.remove_wall("W")
+                    if x < self.width - 1:
+                        cell.remove_wall("E")
+                    cell.remove_wall("S")
+
+                elif y == self.height - 1:
+                    if x > 0:
+                        cell.remove_wall("W")
+                    if x < self.width - 1:
+                        cell.remove_wall("E")
+                    cell.remove_wall("N")
+
+                elif x == 0:
+                    cell.remove_wall("W")
+                    if y > 0:
+                        cell.remove_wall("N")
+                    if y < self.height - 1:
+                        cell.remove_wall("S")
+
+                elif x == self.width - 1:
+                    cell.remove_wall("E")
+                    if y > 0:
+                        cell.remove_wall("N")
+                    if y < self.height - 1:
+                        cell.remove_wall("S")
+
 
     def print_hex(self) -> None:
-        for y in range(self.maze.height):
+        for y in range(self.height):
             row = ""
-            for x in range(self.maze.width):
-                cell = self.maze.get_cell(x, y)
+            for x in range(self.width):
+                cell = self.get_cell(x, y)
                 row += cell.to_hex()
             print(row)
