@@ -1,6 +1,6 @@
 """
 validator.py
-Contains functions to validate config file content
+Contains functions to validate config file content.
 """
 
 from .types import ConfigDict
@@ -15,6 +15,16 @@ from .constants import (
 
 
 def validate_positive_int(config: ConfigDict, key: str) -> None:
+    """
+    Validate that a config key contains a positive integer.
+
+    Args:
+        config (ConfigDict): The configuration dictionary.
+        key (str): The key to validate in the config.
+
+    Raises:
+        ValueError: If the value is not an integer or is negative.
+    """
     value = config[key]
 
     if not isinstance(value, int) or value < 0:
@@ -22,6 +32,16 @@ def validate_positive_int(config: ConfigDict, key: str) -> None:
 
 
 def validate_bool(config: ConfigDict, key: str) -> None:
+    """
+    Validate that a config key contains a boolean value.
+
+    Args:
+        config (ConfigDict): The configuration dictionary.
+        key (str): The key to validate in the config.
+
+    Raises:
+        ValueError: If the value is not a boolean.
+    """
     value = config[key]
 
     if not isinstance(value, bool):
@@ -29,6 +49,16 @@ def validate_bool(config: ConfigDict, key: str) -> None:
 
 
 def validate_tuples(config: ConfigDict, key: str) -> None:
+    """
+    Validate that a config key contains a tuple of two positive integers.
+
+    Args:
+        config (ConfigDict): The configuration dictionary.
+        key (str): The key to validate in the config.
+
+    Raises:
+        ValueError: If the value is not a tuple of length 2, or any element is not a positive integer.
+    """
     value = config[key]
 
     if not (isinstance(value, tuple) and len(value) == 2):
@@ -40,6 +70,17 @@ def validate_tuples(config: ConfigDict, key: str) -> None:
 
 
 def validate_str(config: ConfigDict, key: str, allowed: set[str]) -> None:
+    """
+    Validate that a config key contains a string within a set of allowed values.
+
+    Args:
+        config (ConfigDict): The configuration dictionary.
+        key (str): The key to validate in the config.
+        allowed (set[str]): A set of allowed string values for this key.
+
+    Raises:
+        ValueError: If the value is not a string or not in the allowed set.
+    """
     value = config[key]
 
     if not isinstance(value, str):
@@ -50,6 +91,16 @@ def validate_str(config: ConfigDict, key: str, allowed: set[str]) -> None:
 
 
 def validate_file(config: ConfigDict, key: str) -> None:
+    """
+    Validate that a config key contains a string ending with '.txt'.
+
+    Args:
+        config (ConfigDict): The configuration dictionary.
+        key (str): The key to validate in the config.
+
+    Raises:
+        ValueError: If the value is not a string or does not end with '.txt'.
+    """
     value = config[key]
 
     if not isinstance(value, str):
@@ -61,10 +112,19 @@ def validate_file(config: ConfigDict, key: str) -> None:
 
 def validate_config(config: ConfigDict) -> ConfigDict:
     """
-    Function that validates all params
+    Validate an entire configuration dictionary.
 
-    :param config: object that contains config params
-    :return: validated config
+    This function checks for missing required keys and validates each
+    configuration parameter according to its expected type and allowed values.
+
+    Args:
+        config (ConfigDict): The configuration dictionary to validate.
+
+    Returns:
+        ConfigDict: The validated configuration dictionary.
+
+    Raises:
+        ValueError: If any required key is missing or if any validation fails.
     """
     missing_keys = REQUIRED_KEYS - set(config.keys())
     if missing_keys:
