@@ -1,6 +1,6 @@
 """
 constants.py
-File that containts constants
+File that containts constants for config
 """
 
 REQUIRED_KEYS = {
