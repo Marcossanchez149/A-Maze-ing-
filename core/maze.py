@@ -149,7 +149,8 @@ class Maze:
             self.remove_wall_between(cell1, cell2)
             self.remove_wall_between(cell2, cell3)
 
-        # Iterate over the first column (x = 0), excluding the corners that have already been iterated
+        # Iterate over the first column (x = 0),
+        # excluding the corners that have already been iterated
         for y in range(self.height - 1):
             cell1 = self.get_cell(0, y)
             cell2 = self.get_cell(0, y + 1)
@@ -158,7 +159,8 @@ class Maze:
             self.remove_wall_between(cell1, cell2)
             self.remove_wall_between(cell2, cell3)
 
-        # Iterate over the last column (x = self.width - 1), excluding the corners that have already been iterated
+        # Iterate over the last column (x = self.width - 1),
+        # excluding the corners that have already been iterated
         for y in range(self.height - 1):
             cell1 = self.get_cell(self.width - 1, y)
             cell2 = self.get_cell(self.width - 1, y + 1)
