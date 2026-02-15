@@ -133,37 +133,39 @@ class Maze:
             - 'W' for west/left
             - 'E' for east/right
         """
-        for y in range(self.height):
-            for x in range(self.width):
-                cell = self.grid[y][x]
+        # Iterate over the first row (y = 0)
+        for x in range(self.width - 1):
+            cell1 = self.get_cell(x, 0)
+            cell2 = self.get_cell(x + 1, 0)
+            cell3 = self.get_cell(x + 1, 1)
+            self.remove_wall_between(cell1, cell2)
+            self.remove_wall_between(cell2, cell3)
 
-                if y == 0:
-                    if x > 0:
-                        cell.remove_wall("W")
-                    if x < self.width - 1:
-                        cell.remove_wall("E")
-                    cell.remove_wall("S")
+        # Iterate over the last row (y = self.height - 1)
+        for x in range(self.width - 1):
+            cell1 = self.get_cell(x, self.height - 1)
+            cell2 = self.get_cell(x + 1, self.height - 1)
+            cell3 = self.get_cell(x + 1, self.height - 2)
+            self.remove_wall_between(cell1, cell2)
+            self.remove_wall_between(cell2, cell3)
 
-                elif y == self.height - 1:
-                    if x > 0:
-                        cell.remove_wall("W")
-                    if x < self.width - 1:
-                        cell.remove_wall("E")
-                    cell.remove_wall("N")
+        # Iterate over the first column (x = 0), excluding the corners that have already been iterated
+        for y in range(self.height - 1):
+            cell1 = self.get_cell(0, y)
+            cell2 = self.get_cell(0, y + 1)
+            cell3 = self.get_cell(1, y + 1)
+            # Remove wall between the cells of the first column
+            self.remove_wall_between(cell1, cell2)
+            self.remove_wall_between(cell2, cell3)
 
-                elif x == 0:
-                    cell.remove_wall("E")
-                    if y > 0:
-                        cell.remove_wall("N")
-                    if y < self.height - 1:
-                        cell.remove_wall("S")
-
-                elif x == self.width - 1:
-                    cell.remove_wall("W")
-                    if y > 0:
-                        cell.remove_wall("N")
-                    if y < self.height - 1:
-                        cell.remove_wall("S")
+        # Iterate over the last column (x = self.width - 1), excluding the corners that have already been iterated
+        for y in range(self.height - 1):
+            cell1 = self.get_cell(self.width - 1, y)
+            cell2 = self.get_cell(self.width - 1, y + 1)
+            cell3 = self.get_cell(self.width - 2, y + 1)
+            # Remove wall between the cells of the last column
+            self.remove_wall_between(cell1, cell2)
+            self.remove_wall_between(cell2, cell3)
 
     def print_hex(self) -> None:
         for y in range(self.height):

@@ -48,4 +48,4 @@ class AsciiRender(Render):
 
         :param self: own instance
         """
-        print("\033c", end="")  # Esta secuencia de escape limpia la terminal.
+        print("\033c", end="")
