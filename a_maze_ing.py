@@ -3,6 +3,8 @@
 from config.parser import parse_config_file
 from config.validator import validate_config
 from core.maze import Maze
+from render import AsciiRender
+
 
 def main():
     print("A-Maze-Ing\n")
@@ -21,10 +23,17 @@ def main():
             height=height,
         )
 
+        ascii_render = AsciiRender()
+
         print("Maze in HEX:")
         maze.print_hex()
+
+        print("\nMaze in Ascii:\n")
+        ascii_render.draw_maze(maze)
+
     except ValueError as e:
         print(e)
+
 
 if __name__ == "__main__":
     main()
