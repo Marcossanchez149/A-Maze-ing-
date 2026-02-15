@@ -3,11 +3,10 @@ parser.py
 The file has functions to parse config.txt and convert values
 """
 
+from .types import ConfigValue, ConfigDict
 
-from typing import Union, Tuple, Dict
 
-
-def convert_value(value: str) -> Union[int, bool, Tuple[int, int], str]:
+def convert_value(value: str) -> ConfigValue:
     """
     Docstring for convert_value
 
@@ -36,9 +35,7 @@ def convert_value(value: str) -> Union[int, bool, Tuple[int, int], str]:
     return value
 
 
-def parse_config_file(path: str) -> Dict[str,
-                                         Union[int, bool, Tuple[int, int], str]
-                                         ]:
+def parse_config_file(path: str) -> ConfigDict:
     """
     Read a key=value file and converts it to a dictionary
     with keys in lower and values as strings
