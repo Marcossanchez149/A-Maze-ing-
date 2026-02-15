@@ -1,10 +1,10 @@
 # A-Maze-Ing
 
-Proyecto de generación, validación y resolución de laberintos en Python, con soporte para renderizado ASCII y gráfico, animaciones y pruebas unitarias.
+Project for maze generation, validation, and solving in Python, with support for ASCII and graphical rendering, animations, and unit tests.
 
 ---
 
-## Estructura del proyecto
+## Project Structure
 
 ```text
 project/
@@ -43,9 +43,9 @@ project/
 ├── .gitignore
 └── makefile
 
-##Tabla de combinaciones de paredes
+## Wall Combinations Table
 
-| Binario | Decimal | Hexadecimal | Muros cerrados     |
+| Binary  | Decimal | Hexadecimal |    Closed Walls    |
 | ------- | ------- | ----------- | ------------------ |
 | 0000    | 0       | 0x0         | Ninguno            |
 | 0001    | 1       | 0x1         | N                  |
@@ -55,11 +55,11 @@ project/
 | 0101    | 5       | 0x5         | N, S               |
 | 0110    | 6       | 0x6         | E, S               |
 | 0111    | 7       | 0x7         | N, E, S            |
-| 1000    | 8       | 0x8         | O                  |
-| 1001    | 9       | 0x9         | N, O               |
-| 1010    | 10      | 0xA         | E, O               |
-| 1011    | 11      | 0xB         | N, E, O            |
-| 1100    | 12      | 0xC         | S, O               |
-| 1101    | 13      | 0xD         | N, S, O            |
-| 1110    | 14      | 0xE         | E, S, O            |
-| 1111    | 15      | 0xF         | Todos (N, E, S, O) |
+| 1000    | 8       | 0x8         | W                  |
+| 1001    | 9       | 0x9         | N, W               |
+| 1010    | 10      | 0xA         | E, W               |
+| 1011    | 11      | 0xB         | N, E, W            |
+| 1100    | 12      | 0xC         | S, W               |
+| 1101    | 13      | 0xD         | N, S, W            |
+| 1110    | 14      | 0xE         | E, S, W            |
+| 1111    | 15      | 0xF         | -All- (N, E, S, W) |
