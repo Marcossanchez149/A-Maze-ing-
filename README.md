@@ -11,6 +11,7 @@ project/
 ├── core/
 │   ├── __init__.py
 │   ├── cell.py
+│   ├── constants.py
 │   ├── maze.py
 │   └── solver.py
 ├── generators/
