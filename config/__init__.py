@@ -1,5 +1,5 @@
 """
-Package manager
+Package manager for config
 """
 
 
