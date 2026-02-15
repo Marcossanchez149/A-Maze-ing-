@@ -24,6 +24,7 @@ project/
 │   └── graphic.py
 ├── config/
 │   ├── __init__.py
+│   ├── constants.py
 │   ├── parser.py
 │   ├── types.py
 │   └── validator.py
