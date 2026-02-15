@@ -46,7 +46,7 @@ class Cell:
         Get the bitmask corresponding to a direction.
 
         Args:
-            direction (str): One of 'N', 'E', 'S', 'O'.
+            direction (str): One of 'N', 'E', 'S', 'W'.
 
         Returns:
             int: Bitmask of the specified wall.
@@ -64,7 +64,7 @@ class Cell:
         Remove a wall in the given direction.
 
         Args:
-            direction (str): One of 'N', 'E', 'S', 'O'.
+            direction (str): One of 'N', 'E', 'S', 'W'.
         """
         mask = self._get_mask(direction)
         self.__walls &= ~mask
@@ -74,7 +74,7 @@ class Cell:
         Add a wall in the given direction.
 
         Args:
-            direction (str): One of 'N', 'E', 'S', 'O'.
+            direction (str): One of 'N', 'E', 'S', 'W'.
         """
         mask = self._get_mask(direction)
         self.__walls |= mask
@@ -84,7 +84,7 @@ class Cell:
         Check if there is a wall in the given direction.
 
         Args:
-            direction (str): One of 'N', 'E', 'S', 'O'.
+            direction (str): One of 'N', 'E', 'S', 'W'.
 
         Returns:
             bool: True if the wall is present, False otherwise.
