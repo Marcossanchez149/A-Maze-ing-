@@ -2,6 +2,7 @@
 ascii.py
 File that contains AsciiRender class
 """
+from core.maze import Maze
 from .render import Render
 
 
@@ -14,7 +15,7 @@ class AsciiRender(Render):
     and '|' characters, while empty spaces represent open paths.
     """
 
-    def draw_maze(self, maze):
+    def draw_maze(self, maze: Maze) -> None:
         """
         Render the maze to the console using ASCII characters.
 

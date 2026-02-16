@@ -5,7 +5,7 @@ Defines the abstract rendering contract for maze visualization.
 """
 
 from abc import ABC, abstractmethod
-
+from core.maze import Maze
 
 class Render(ABC):
     """
@@ -16,7 +16,7 @@ class Render(ABC):
     """
 
     @abstractmethod
-    def draw_maze(self, maze):
+    def draw_maze(self, maze: Maze) -> None:
         """
         Render the given maze.
 
