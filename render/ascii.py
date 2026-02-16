@@ -1,20 +1,40 @@
+"""
+ascii.py
+File that contains AsciiRender class
+"""
 from .render import Render
-
-# TO FIX
 
 
 class AsciiRender(Render):
     """
-    AsciiRender class that implements how to draw a maze with ASCII characters.
-    """
+    ASCII-based maze renderer.
 
-    def draw_cell(self, cell, is_right_edge=False):
-        return
+    This renderer outputs a maze representation to the console
+    using ASCII characters. Walls are represented using '+', '-',
+    and '|' characters, while empty spaces represent open paths.
+    """
 
     def draw_maze(self, maze):
         """
-        Draw the maze in proper ASCII, fully aligned.
+        Render the maze to the console using ASCII characters.
+
+        The maze is drawn with:
+        - '+' representing corners
+        - '---' representing horizontal walls
+        - '|' representing vertical walls
+        - Spaces representing open paths
+
+        The maze object is expected to provide:
+        - width (int): number of columns
+        - height (int): number of rows
+        - get_cell(x, y): returns a cell object
+        - cell.has_wall(direction): returns True if a wall exists
+          in the given direction ("N", "S", "E", "W")
+
+        Args:
+            maze: The maze instance to render.
         """
+
         # Draw the top border
         top_line = "+"
         for x in range(maze.width):
@@ -32,6 +52,7 @@ class AsciiRender(Render):
                 middle_line += "|" if cell.has_wall("W") else " "
                 # Add cell content (3 spaces)
                 middle_line += "   "
+
             # Add right wall for the last cell
             last_cell = maze.get_cell(maze.width - 1, y)
             middle_line += "|" if last_cell.has_wall("E") else " "
@@ -43,11 +64,3 @@ class AsciiRender(Render):
                 cell = maze.get_cell(x, y)
                 bottom_line += "---+" if cell.has_wall("S") else "   +"
             print(bottom_line)
-
-    def clear(self):
-        """
-        Clear the screen
-
-        :param self: own instance
-        """
-        print("\033c", end="")
