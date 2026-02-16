@@ -1,4 +1,4 @@
-# a_maze_ing.py
+#!/usr/bin/env python3
 
 from config.parser import parse_config_file
 from config.validator import validate_config
@@ -58,13 +58,13 @@ def main():
     print("A-Maze-Ing\n")
     try:
         config = parse_config_file("config.txt")
-        config = validate_config(config)
+        validate_config(config)
 
         print("-------Config-------")
         print(config)
         print()
-        width = config.get("width", 10)
-        height = config.get("height", 10)
+        width = config.get("width")
+        height = config.get("height")
 
         maze = Maze(
             width=width,

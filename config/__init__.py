@@ -15,8 +15,11 @@ from .constants import (
     TUPLES,
     ALGORITHMS,
     DISPLAYS,
+    MAX_WIDTH,
+    MAX_HEIGHT
 )
 
 __all__ = ["parse_config_file", "validate_config",
            "ConfigDict", "ConfigValue", "REQUIRED_KEYS",
-           "POSITIVE_INT", "BOOL", "TUPLES", "ALGORITHMS", "DISPLAYS"]
+           "POSITIVE_INT", "BOOL", "TUPLES", "ALGORITHMS",
+           "DISPLAYS", "MAX_HEIGHT", "MAX_WIDTH"]

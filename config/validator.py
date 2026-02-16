@@ -11,6 +11,8 @@ from .constants import (
     TUPLES,
     ALGORITHMS,
     DISPLAYS,
+    MAX_HEIGHT,
+    MAX_WIDTH
 )
 
 
@@ -112,25 +114,21 @@ def validate_file(config: ConfigDict, key: str) -> None:
         raise ValueError(f"{key.capitalize()} must end with .txt")
 
 
-def validate_config(config: ConfigDict) -> ConfigDict:
+def validate_basic_config(config: ConfigDict) -> None:
     """
-    Validate an entire configuration dictionary.
-
-    This function checks for missing required keys and validates each
-    configuration parameter according to its expected type and allowed values.
+    Validate the basic configuration: types,
+    required keys, values of type int, bool, tuples, etc.
 
     Args:
         config (ConfigDict): The configuration dictionary to validate.
 
-    Returns:
-        ConfigDict: The validated configuration dictionary.
-
     Raises:
-        ValueError: If any required key is missing or if any validation fails.
+        ValueError: If any basic validation
+        fails (missing keys or invalid values).
     """
     missing_keys = REQUIRED_KEYS - set(config.keys())
     if missing_keys:
-        raise ValueError(f"Missing config keys:{missing_keys}")
+        raise ValueError(f"Missing config keys: {missing_keys}")
 
     for key in POSITIVE_INT:
         validate_positive_int(config, key)
@@ -146,4 +144,75 @@ def validate_config(config: ConfigDict) -> ConfigDict:
 
     validate_file(config, "output_file")
 
-    return config
+
+def validate_business_rules(config: ConfigDict) -> None:
+    """
+    Validate business-specific rules for the configuration.
+
+    This function ensures that:
+    - The `width` does not exceed the maximum allowed (`MAX_WIDTH`).
+    - The `height` does not exceed the maximum allowed (`MAX_HEIGHT`).
+    - The `entry` and `exit` positions are different.
+    - The `entry` and `exit` positions are within the
+    bounds defined by `width` and `height`.
+
+    Args:
+        config (ConfigDict): The configuration dictionary to
+        validate. It must contain the keys:
+            - 'width': An integer representing the width of the maze.
+            - 'height': An integer representing the height of the maze.
+            - 'entry': A tuple (x, y) representing the
+            entry position in the maze.
+            - 'exit': A tuple (x, y) representing the
+            exit position in the maze.
+
+    Raises:
+        ValueError: If any of the business rules are violated:
+            - If `width` exceeds `MAX_WIDTH`.
+            - If `height` exceeds `MAX_HEIGHT`.
+            - If `entry` is the same as `exit`.
+            - If `entry` or `exit` are out of bounds
+            based on `width` and `height`.
+    """
+    width = config.get("width")
+    height = config.get("height")
+    entry = config.get("entry")
+    exit = config.get("exit")
+
+    if width > MAX_WIDTH:
+        raise ValueError("Width must be no greater " +
+                         f"than {MAX_WIDTH}. Current value: {width}")
+
+    if height > MAX_HEIGHT:
+        raise ValueError("Height must be no greater " +
+                         f"than {MAX_HEIGHT}. Current value: {height}")
+
+    if entry == exit:
+        raise ValueError("Entry must be different from exit")
+
+    if not (0 <= entry[0] < width and 0 <= entry[1] < height):
+        raise ValueError(f"Entry {entry} is out of bounds.")
+
+    if not (0 <= exit[0] < width and 0 <= exit[1] < height):
+        raise ValueError(f"Exit {exit} is out of bounds.")
+
+
+def validate_config(config: ConfigDict) -> None:
+    """
+    Validate the entire configuration by performing both basic validations
+    (such as type checks and required keys) and business-specific rules.
+
+    This function first calls `validate_basic_config`
+    to ensure the configuration
+    contains valid types and all required keys, and then checks the business
+    logic with `validate_business_rules`.
+
+    Args:
+        config (ConfigDict): The configuration dictionary to validate.
+
+    Raises:
+        ValueError: If any validation fails
+        (either basic validation or business rules).
+    """
+    validate_basic_config(config)
+    validate_business_rules(config)
