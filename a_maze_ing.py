@@ -65,10 +65,14 @@ def main():
         print()
         width = config.get("width")
         height = config.get("height")
+        entry = config.get("entry")
+        exit = config.get("exit")
 
         maze = Maze(
             width=width,
             height=height,
+            entry=entry,
+            exit=exit
         )
         generate_maze(maze)
         ascii_render = AsciiRender()

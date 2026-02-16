@@ -52,7 +52,12 @@ class AsciiRender(Render):
                 # Add left wall if exists, otherwise space
                 middle_line += "|" if cell.has_wall("W") else " "
                 # Add cell content (3 spaces)
-                middle_line += "   "
+                if (x, y) == maze.entry:
+                    middle_line += " x "
+                elif (x, y) == maze.exit:
+                    middle_line += " o "
+                else:
+                    middle_line += "   "
 
             # Add right wall for the last cell
             last_cell = maze.get_cell(maze.width - 1, y)
