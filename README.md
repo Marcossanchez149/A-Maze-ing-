@@ -15,9 +15,7 @@ project/
 │   ├── maze.py
 │   └── solver.py
 ├── generators/
-│   ├── __init__.py
-│   ├── maze_generator.py     
-│   └── algorithms.py        
+│   ├── maze_generator.py        
 ├── render/
 │   ├── __init__.py
 │   ├── render.py             

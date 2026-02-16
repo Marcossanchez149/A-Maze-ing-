@@ -7,6 +7,7 @@ Defines the abstract rendering contract for maze visualization.
 from abc import ABC, abstractmethod
 from core.maze import Maze
 
+
 class Render(ABC):
     """
     Abstract base class for maze rendering implementations.
