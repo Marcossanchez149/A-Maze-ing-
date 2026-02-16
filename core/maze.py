@@ -61,7 +61,6 @@ class Maze:
             [Cell(x, y) for x in range(width)] for y in range(height)
         ]
 
-
     def get_cell(self, x: int, y: int) -> Cell:
         """
         Returns the Cell object at the specified coordinates.

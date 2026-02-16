@@ -1,43 +1,31 @@
 """
 render.py
-Defines contract for render
-"""
 
+Defines the abstract rendering contract for maze visualization.
+"""
 
 from abc import ABC, abstractmethod
 
 
-# TO FIX
 class Render(ABC):
     """
-    Render
-    Main Render class
+    Abstract base class for maze rendering implementations.
+
+    Any subclass must implement the draw_maze method to define
+    how a maze should be rendered (e.g., console, GUI, web, etc.).
     """
+
     @abstractmethod
     def draw_maze(self, maze):
         """
-        Draw a maze
+        Render the given maze.
 
-        :param self: own instance
-        :param maze: maze to draw
-        """
-        pass
+        Args:
+            maze: The maze object to be rendered. The expected
+                  structure depends on the concrete implementation.
 
-    @abstractmethod
-    def draw_cell(self, cell):
-        """
-        Draw a cell
-
-        :param self: own instance
-        :param cell: cell to draw
-        """
-        pass
-
-    @abstractmethod
-    def clear(self):
-        """
-        Clear the screen
-
-        :param self: own instance
+        Raises:
+            NotImplementedError: If the method is not implemented
+                                 by a subclass.
         """
         pass
