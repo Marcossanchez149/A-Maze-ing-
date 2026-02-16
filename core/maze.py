@@ -61,7 +61,6 @@ class Maze:
             [Cell(x, y) for x in range(width)] for y in range(height)
         ]
 
-        self._open_external_walls()
 
     def get_cell(self, x: int, y: int) -> Cell:
         """
@@ -122,52 +121,6 @@ class Maze:
             cell2.remove_wall("S")
         else:
             raise ValueError("Cells are not adjacent")
-
-    def _open_external_walls(self) -> None:
-        """
-        Adds walls to the outer border cells of the maze.
-
-        Each cell on the edge of the maze will have a wall facing outward:
-            - 'N' for north/top
-            - 'S' for south/bottom
-            - 'W' for west/left
-            - 'E' for east/right
-        """
-        # Iterate over the first row (y = 0)
-        for x in range(self.width - 1):
-            cell1 = self.get_cell(x, 0)
-            cell2 = self.get_cell(x + 1, 0)
-            cell3 = self.get_cell(x + 1, 1)
-            self.remove_wall_between(cell1, cell2)
-            self.remove_wall_between(cell2, cell3)
-
-        # Iterate over the last row (y = self.height - 1)
-        for x in range(self.width - 1):
-            cell1 = self.get_cell(x, self.height - 1)
-            cell2 = self.get_cell(x + 1, self.height - 1)
-            cell3 = self.get_cell(x + 1, self.height - 2)
-            self.remove_wall_between(cell1, cell2)
-            self.remove_wall_between(cell2, cell3)
-
-        # Iterate over the first column (x = 0),
-        # excluding the corners that have already been iterated
-        for y in range(self.height - 1):
-            cell1 = self.get_cell(0, y)
-            cell2 = self.get_cell(0, y + 1)
-            cell3 = self.get_cell(1, y + 1)
-            # Remove wall between the cells of the first column
-            self.remove_wall_between(cell1, cell2)
-            self.remove_wall_between(cell2, cell3)
-
-        # Iterate over the last column (x = self.width - 1),
-        # excluding the corners that have already been iterated
-        for y in range(self.height - 1):
-            cell1 = self.get_cell(self.width - 1, y)
-            cell2 = self.get_cell(self.width - 1, y + 1)
-            cell3 = self.get_cell(self.width - 2, y + 1)
-            # Remove wall between the cells of the last column
-            self.remove_wall_between(cell1, cell2)
-            self.remove_wall_between(cell2, cell3)
 
     def print_hex(self) -> None:
         for y in range(self.height):
