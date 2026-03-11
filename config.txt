@@ -4,6 +4,6 @@ ENTRY=5,5
 EXIT=15,13
 OUTPUT_FILE=maze.txt
 PERFECT=True
-ALGORITHM=backtracking
+ALGORITHM=prim
 DISPLAY=ascii
 SEED=1

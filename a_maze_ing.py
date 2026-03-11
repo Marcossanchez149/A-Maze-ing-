@@ -3,6 +3,7 @@
 from config.parser import parse_config_file
 from config.validator import validate_config
 from core.maze import Maze
+from generators.maze_generator import MazeGenerator
 from render import AsciiRender
 import random
 
@@ -67,6 +68,7 @@ def main():
         height = config.get("height")
         entry = config.get("entry")
         exit = config.get("exit")
+        algorithm = config.get("algorithm")
 
         maze = Maze(
             width=width,
@@ -74,7 +76,8 @@ def main():
             entry=entry,
             exit=exit
         )
-        generate_maze(maze)
+        generator = MazeGenerator()
+        generator.generate_maze(maze, algorithm)
         ascii_render = AsciiRender()
 
         print("Maze in HEX:")
