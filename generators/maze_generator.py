@@ -21,6 +21,9 @@ class MazeGenerator:
     # definir los 1 a x algoritmos
 
     def _generate_dfs(self, maze: Maze):
+        # Algoritmo de generacion backtracking
+        # Va avanzando y mirando a los vecions aleatoriamente
+        # abriendo paredes al azar
         rcellx = random.randint(0, maze.width - 1)
         rcelly = random.randint(0, maze.height - 1)
 
@@ -92,3 +95,44 @@ class MazeGenerator:
 
             current_cell.visited = True
             add_frontier_neighbors(current_cell)
+
+    def _generate_kruskal(self, maze: Maze):
+        edges = []
+        for y in range(maze.height):
+            for x in range(maze.width):
+                current_cell = maze.get_cell(x, y)
+
+                if x < maze.width - 1:
+                    right_neighbor = maze.get_cell(x + 1, y)
+                    edges.append((current_cell, right_neighbor))
+
+                if y < maze.height - 1:
+                    bottom_neighbor = maze.get_cell(x, y + 1)
+                    edges.append((current_cell, bottom_neighbor))
+
+        random.shuffle(edges)
+        parent = {}
+        for y in range(maze.height):
+            for x in range(maze.width):
+                cell = maze.get_cell(x, y)
+                parent[cell] = cell
+
+        def find(cell):
+            if parent[cell] != cell:
+                parent[cell] = find(parent[cell])
+            return parent[cell]
+
+        def union(cell1, cell2):
+            root1 = find(cell1)
+            root2 = find(cell2)
+            if root1 != root2:
+                parent[root2] = root1
+
+        for cell1, cell2 in edges:
+            if find(cell1) != find(cell2):
+                union(cell1, cell2)
+
+                maze.remove_wall_between(cell1, cell2)
+
+                cell1.visited = True
+                cell2.visited = True
