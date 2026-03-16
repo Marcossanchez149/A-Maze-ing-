@@ -29,6 +29,11 @@ def main():
             exit=exit
         )
         generator = MazeGenerator()
+        try:
+            generator.set_logo_42(maze)
+        except Exception:
+            print("The entry or the exit are on an invalid position")
+            return
         generator.generate_maze(maze, algorithm)
         ascii_render = AsciiRender()
 

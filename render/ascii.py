@@ -40,7 +40,10 @@ class AsciiRender(Render):
         top_line = "+"
         for x in range(maze.width):
             cell = maze.get_cell(x, 0)
-            top_line += "---+" if cell.has_wall("N") else "   +"
+            if (cell.is_fixed()):
+                top_line += "___+"
+            else:
+                top_line += "---+" if cell.has_wall("N") else "   +"
         print(top_line)
 
         # Draw each row of cells
@@ -50,14 +53,20 @@ class AsciiRender(Render):
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
                 # Add left wall if exists, otherwise space
-                middle_line += "|" if cell.has_wall("W") else " "
+                if (cell.is_fixed()):
+                    middle_line += "|"
+                else:
+                    middle_line += "|" if cell.has_wall("W") else " "
                 # Add cell content (3 spaces)
                 if (x, y) == maze.entry:
                     middle_line += " x "
                 elif (x, y) == maze.exit:
                     middle_line += " o "
                 else:
-                    middle_line += "   "
+                    if (cell.is_fixed()):
+                        middle_line += "***"
+                    else:
+                        middle_line += "   "
 
             # Add right wall for the last cell
             last_cell = maze.get_cell(maze.width - 1, y)
@@ -68,5 +77,8 @@ class AsciiRender(Render):
             bottom_line = "+"
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
-                bottom_line += "---+" if cell.has_wall("S") else "   +"
+                if (cell.is_fixed()):
+                    bottom_line += "___+"
+                else:
+                    bottom_line += "---+" if cell.has_wall("S") else "   +"
             print(bottom_line)

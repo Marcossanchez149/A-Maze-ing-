@@ -40,6 +40,13 @@ class Cell:
         self.__walls = 0b1111
         self.__visited = False
         self.__is_path = False
+        self.__is_fixed = False
+
+    def set_as_fixed(self):
+        self.__is_fixed = True
+
+    def is_fixed(self) -> bool:
+        return self.__is_fixed
 
     def _get_mask(self, direction: str) -> int:
         """

@@ -3,6 +3,10 @@ from core.maze import Maze
 import random
 
 
+class InvalidEntryOrExit(Exception):
+    pass
+
+
 class MazeGenerator:
     # Crear clase Algorithm aqui dentro con cada 1 de los alg = a un num
     # requiere importar enum y hacer un metodo de parseo o algo asi
@@ -58,11 +62,14 @@ class MazeGenerator:
 
     def _generate_prim(self, maze: Maze):
         directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]
+        check = True
+        while check:
+            start_x = random.randint(0, maze.width - 1)
+            start_y = random.randint(0, maze.height - 1)
 
-        start_x = random.randint(0, maze.width - 1)
-        start_y = random.randint(0, maze.height - 1)
-
-        start_cell = maze.get_cell(start_x, start_y)
+            start_cell = maze.get_cell(start_x, start_y)
+            if (not start_cell.is_fixed()):
+                check = False
         start_cell.visited = True
         frontier = []
 
@@ -86,7 +93,7 @@ class MazeGenerator:
                 ny = current_cell.y + dy
                 if 0 <= nx < maze.width and 0 <= ny < maze.height:
                     neighbor = maze.get_cell(nx, ny)
-                    if neighbor.visited:
+                    if neighbor.visited and not neighbor.is_fixed():
                         visited_neighbors.append(neighbor)
 
             if visited_neighbors:
@@ -101,14 +108,16 @@ class MazeGenerator:
         for y in range(maze.height):
             for x in range(maze.width):
                 current_cell = maze.get_cell(x, y)
+                if not current_cell.is_fixed():
+                    if x < maze.width - 1:
+                        right_neighbor = maze.get_cell(x + 1, y)
+                        if not right_neighbor.is_fixed():
+                            edges.append((current_cell, right_neighbor))
 
-                if x < maze.width - 1:
-                    right_neighbor = maze.get_cell(x + 1, y)
-                    edges.append((current_cell, right_neighbor))
-
-                if y < maze.height - 1:
-                    bottom_neighbor = maze.get_cell(x, y + 1)
-                    edges.append((current_cell, bottom_neighbor))
+                    if y < maze.height - 1:
+                        bottom_neighbor = maze.get_cell(x, y + 1)
+                        if not bottom_neighbor.is_fixed():
+                            edges.append((current_cell, bottom_neighbor))
 
         random.shuffle(edges)
         parent = {}
@@ -136,3 +145,28 @@ class MazeGenerator:
 
                 cell1.visited = True
                 cell2.visited = True
+
+    def set_logo_42(self, maze: Maze) -> bool:
+        if (maze.width < 7 or maze.height < 5):
+            return False
+        pattern = [
+                  [1, 0, 1, 0, 1, 1, 1],
+                  [1, 0, 1, 0, 0, 0, 1],
+                  [1, 1, 1, 0, 1, 1, 1],
+                  [0, 0, 1, 0, 1, 0, 0],
+                  [0, 0, 1, 0, 1, 1, 1]
+                  ]
+        p_height = len(pattern)
+        p_width = len(pattern[0])
+        start_x = (maze.width - p_width) // 2
+        start_y = (maze.height - p_height) // 2
+        for y in range(p_height):
+            for x in range(p_width):
+                if pattern[y][x] == 1:
+                    if (maze.entry == (start_x + x, start_y + y)
+                       or maze.exit == (start_x + x, start_y + y)):
+                        raise InvalidEntryOrExit()
+                    cell = maze.get_cell(start_x + x, start_y + y)
+                    cell.set_as_fixed()
+                    cell.visited = True
+        return True
