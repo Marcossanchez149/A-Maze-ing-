@@ -11,6 +11,13 @@ class MazeGenerator:
     # Crear clase Algorithm aqui dentro con cada 1 de los alg = a un num
     # requiere importar enum y hacer un metodo de parseo o algo asi
     # a string pero más limpio y profesional
+    def __init__(self, seed: int):
+        self.__seed = seed
+        if (seed == 0):
+            random.seed(None)
+        else:
+            random.seed(seed)
+
     def generate_maze(self, maze: Maze, algorithm: str) -> None:
         algorithm = algorithm.lower()
 

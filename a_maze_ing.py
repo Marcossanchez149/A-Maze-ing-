@@ -21,6 +21,7 @@ def main():
         entry = config.get("entry")
         exit = config.get("exit")
         algorithm = config.get("algorithm")
+        seed = config.get("seed")
 
         maze = Maze(
             width=width,
@@ -28,7 +29,7 @@ def main():
             entry=entry,
             exit=exit
         )
-        generator = MazeGenerator()
+        generator = MazeGenerator(seed)
         try:
             generator.set_logo_42(maze)
         except Exception:
