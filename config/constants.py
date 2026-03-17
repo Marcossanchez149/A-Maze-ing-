@@ -14,7 +14,7 @@ REQUIRED_KEYS = {
     "display",
     "seed",
 }
-ALGORITHMS = {"backtracking", "prim", "kruskal"}
+ALGORITHMS = {"backtracking", "dfs" "prim", "kruskal"}
 DISPLAYS = {"ascii", "graphic"}
 POSITIVE_INT = {"width", "height", "seed"}
 BOOL = {"perfect"}
