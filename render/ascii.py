@@ -1,8 +1,8 @@
 import time
-from collections import deque
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.maze import Maze
+from core.solver import shortest_path
 from .render import Render
 
 from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
@@ -62,7 +62,7 @@ class AsciiRender(Render):
             path = None
             if self.show_path:
                 if self._cached_path is None:
-                    self._cached_path = self._shortest_path(maze)
+                    self._cached_path = shortest_path(maze)
                 path = self._cached_path
 
             self.draw_maze(maze, path=path)
@@ -92,14 +92,14 @@ class AsciiRender(Render):
                 maze = new_maze
                 self._cached_path = None
                 if self.show_path:
-                    self._cached_path = self._shortest_path(maze)
+                    self._cached_path = shortest_path(maze)
                     if self.animate_path and self._cached_path:
                         self._animate_path_once(maze, self._cached_path)
             elif cmd == "p":
                 self.show_path = not self.show_path
 
                 if self.show_path:
-                    self._cached_path = self._shortest_path(maze)
+                    self._cached_path = shortest_path(maze)
                     if self.animate_path and self._cached_path:
                         self._animate_path_once(maze, self._cached_path)
                 # if turning off, nothing special
@@ -192,58 +192,6 @@ class AsciiRender(Render):
             self.draw_maze(maze, path=path[:k])
             self._print_menu()
             time.sleep(self.path_delay)
-
-    def _shortest_path(self, maze: Maze) -> Optional[List[Pos]]:
-        start = maze.entry
-        goal = maze.exit
-
-        if maze.get_cell(*start).is_fixed() or maze.get_cell(*goal).is_fixed():
-            return None
-
-        q = deque([start])
-        prev: Dict[Pos, Optional[Pos]] = {start: None}
-
-        while q:
-            x, y = q.popleft()
-            if (x, y) == goal:
-                break
-
-            cell = maze.get_cell(x, y)
-
-            candidates = [
-                ("N", (x, y - 1)),
-                ("S", (x, y + 1)),
-                ("W", (x - 1, y)),
-                ("E", (x + 1, y)),
-            ]
-
-            for d, (nx, ny) in candidates:
-                if not (0 <= nx < maze.width and 0 <= ny < maze.height):
-                    continue
-                if cell.has_wall(d):
-                    continue
-
-                ncell = maze.get_cell(nx, ny)
-                if ncell.is_fixed():
-                    continue
-
-                np = (nx, ny)
-                if np in prev:
-                    continue
-
-                prev[np] = (x, y)
-                q.append(np)
-
-        if goal not in prev:
-            return None
-
-        path: List[Pos] = []
-        cur: Optional[Pos] = goal
-        while cur is not None:
-            path.append(cur)
-            cur = prev[cur]
-        path.reverse()
-        return path
 
     def _print_menu(self) -> None:
         print()

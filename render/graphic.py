@@ -2,17 +2,16 @@
 Docstring for render.graphic
 """
 
-from collections import deque
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import pygame
 
 from core.maze import Maze
+from core.solver import shortest_path
 from .render import Render
 from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
 
 Pos = Tuple[int, int]
-
 
 class PygameRender(Render):
     def __init__(
@@ -71,7 +70,7 @@ class PygameRender(Render):
         Safe to call after regenerating.
         """
         if self._cached_path is None:
-            self._cached_path = self._shortest_path(maze)
+            self._cached_path = shortest_path(maze)
 
         # even if path is None/empty, keep state consistent
         self.path_animating = True
@@ -164,7 +163,7 @@ class PygameRender(Render):
 
             if self.show_path:
                 if self._cached_path is None:
-                    self._cached_path = self._shortest_path(maze)
+                    self._cached_path = shortest_path(maze)
 
                 if self._cached_path:
                     if self.path_animating:
@@ -261,57 +260,6 @@ class PygameRender(Render):
                 self.exit_color,
                 cell_rect(maze.exit).inflate(-cs // 3, -cs // 3),
             )
-
-    def _shortest_path(self, maze: Maze) -> Optional[List[Pos]]:
-        start = maze.entry
-        goal = maze.exit
-
-        if maze.get_cell(*start).is_fixed() or maze.get_cell(*goal).is_fixed():
-            return None
-
-        q = deque([start])
-        prev: Dict[Pos, Optional[Pos]] = {start: None}
-
-        while q:
-            x, y = q.popleft()
-            if (x, y) == goal:
-                break
-
-            cell = maze.get_cell(x, y)
-            candidates = [
-                ("N", (x, y - 1)),
-                ("S", (x, y + 1)),
-                ("W", (x - 1, y)),
-                ("E", (x + 1, y)),
-            ]
-
-            for d, (nx, ny) in candidates:
-                if not (0 <= nx < maze.width and 0 <= ny < maze.height):
-                    continue
-                if cell.has_wall(d):
-                    continue
-
-                ncell = maze.get_cell(nx, ny)
-                if ncell.is_fixed():
-                    continue
-
-                np = (nx, ny)
-                if np in prev:
-                    continue
-
-                prev[np] = (x, y)
-                q.append(np)
-
-        if goal not in prev:
-            return None
-
-        path: List[Pos] = []
-        cur: Optional[Pos] = goal
-        while cur is not None:
-            path.append(cur)
-            cur = prev[cur]
-        path.reverse()
-        return path
 
     def _draw_path(self, screen: pygame.Surface, maze: Maze, path: Optional[List[Pos]]) -> None:
         if not path:
