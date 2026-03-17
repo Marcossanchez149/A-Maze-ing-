@@ -36,17 +36,28 @@ def main():
             print("The entry or the exit are on an invalid position")
             return
         generator.generate_maze(maze, algorithm)
-        ascii_render = AsciiRender()
 
         print("Maze in HEX:")
         maze.print_hex()
 
         print("\nMaze in Ascii:\n")
-        ascii_render.draw_maze(maze)
-
+        AsciiRender().run(
+            maze,
+            generator=generator,
+            algorithm=algorithm,
+            apply_logo_42=True,
+            seed=seed,
+        )
+        """
         renderer = PygameRender(cell_size=32)
-        renderer.draw_maze(maze)
-
+        renderer.draw_maze(
+            maze,
+            generator=generator,
+            algorithm=algorithm,
+            apply_logo_42=True,
+            seed=seed,
+        )
+        """
     except ValueError as e:
         print(e)
 

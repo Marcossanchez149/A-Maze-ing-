@@ -1,84 +1,257 @@
-"""
-ascii.py
-File that contains AsciiRender class
-"""
+import time
+from collections import deque
+from typing import Dict, List, Optional, Tuple
+
 from core.maze import Maze
 from .render import Render
 
+from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
+
+Pos = Tuple[int, int]
+
 
 class AsciiRender(Render):
-    """
-    ASCII-based maze renderer.
+    def __init__(self) -> None:
+        # toggles
+        self.show_path = False
+        self.use_color = True
+        self.colorize_logo_42 = True
 
-    This renderer outputs a maze representation to the console
-    using ASCII characters. Walls are represented using '+', '-',
-    and '|' characters, while empty spaces represent open paths.
-    """
+        # animation
+        self.animate_path = True
+        self.path_delay = 0.02  # seconds per step
 
-    def draw_maze(self, maze: Maze) -> None:
+        # wall color palettes (ANSI)
+        self.wall_palettes = [
+            "\x1b[37m",  # white
+            "\x1b[36m",  # cyan
+            "\x1b[31m",  # red
+            "\x1b[32m",  # green
+            "\x1b[33m",  # yellow
+        ]
+        self.wall_palette_index = 0
+
+        # extra colors
+        self.reset = "\x1b[0m"
+        self.logo_42_color = "\x1b[35m"  # magenta
+        self.path_color = "\x1b[93m"     # bright yellow
+
+        self._cached_path: Optional[List[Pos]] = None
+
+    def run(
+        self,
+        maze: Maze,
+        *,
+        generator: MazeGenerator,
+        algorithm: str = "dfs",
+        seed: int = 1,
+        apply_logo_42: bool = False,
+    ) -> None:
         """
-        Render the maze to the console using ASCII characters.
-
-        The maze is drawn with:
-        - '+' representing corners
-        - '---' representing horizontal walls
-        - '|' representing vertical walls
-        - Spaces representing open paths
-
-        The maze object is expected to provide:
-        - width (int): number of columns
-        - height (int): number of rows
-        - get_cell(x, y): returns a cell object
-        - cell.has_wall(direction): returns True if a wall exists
-          in the given direction ("N", "S", "E", "W")
-
-        Args:
-            maze: The maze instance to render.
+        Interactive ASCII loop:
+          r = regenerate
+          p = show/hide shortest path (animated if enabled)
+          c = change wall color
+          l = toggle 42 color
+          a = toggle path animation
+          q = quit
         """
+        while True:
+            self._clear()
 
-        # Draw the top border
-        top_line = "+"
+            path = None
+            if self.show_path:
+                if self._cached_path is None:
+                    self._cached_path = self._shortest_path(maze)
+                path = self._cached_path
+
+            self.draw_maze(maze, path=path)
+            self._print_menu()
+
+            cmd = input("> ").strip().lower()
+            if cmd in ("q", "quit", "exit"):
+                return
+
+            if cmd == "r":
+                new_maze = Maze(
+                    width=maze.width,
+                    height=maze.height,
+                    perfect=maze.perfect,
+                    seed=seed or maze.seed,
+                    entry=maze.entry,
+                    exit=maze.exit,
+                )
+
+                if apply_logo_42:
+                    try:
+                        generator.set_logo_42(new_maze)
+                    except InvalidEntryOrExit:
+                        pass
+
+                generator.generate_maze(new_maze, algorithm)
+                maze = new_maze
+                self._cached_path = None
+                if self.show_path:
+                    self._cached_path = self._shortest_path(maze)
+                    if self.animate_path and self._cached_path:
+                        self._animate_path_once(maze, self._cached_path)
+            elif cmd == "p":
+                self.show_path = not self.show_path
+
+                if self.show_path:
+                    self._cached_path = self._shortest_path(maze)
+                    if self.animate_path and self._cached_path:
+                        self._animate_path_once(maze, self._cached_path)
+                # if turning off, nothing special
+
+            elif cmd == "c":
+                self.wall_palette_index = (self.wall_palette_index + 1) % len(self.wall_palettes)
+
+            elif cmd == "l":
+                self.colorize_logo_42 = not self.colorize_logo_42
+
+            elif cmd in ("color", "ansi"):
+                self.use_color = not self.use_color
+
+            elif cmd == "a":
+                self.animate_path = not self.animate_path
+
+    def draw_maze(self, maze: Maze, *, path: Optional[List[Pos]] = None) -> None:
+        path_set = set(path or [])
+
+        wall_color = self.wall_palettes[self.wall_palette_index] if self.use_color else ""
+        reset = self.reset if self.use_color else ""
+        path_color = self.path_color if self.use_color else ""
+        logo_color = (self.logo_42_color if (self.use_color and self.colorize_logo_42) else "")
+
+        def w(s: str) -> str:
+            return f"{wall_color}{s}{reset}" if self.use_color else s
+
+        def logo(s: str) -> str:
+            return f"{logo_color}{s}{reset}" if logo_color else s
+
+        def pch(s: str) -> str:
+            return f"{path_color}{s}{reset}" if self.use_color else s
+
+        # --- top border ---
+        top_line = w("+")
         for x in range(maze.width):
             cell = maze.get_cell(x, 0)
-            if (cell.is_fixed()):
-                top_line += "___+"
+            if cell.is_fixed():
+                top_line += logo("___") + w("+")
             else:
-                top_line += "---+" if cell.has_wall("N") else "   +"
+                top_line += w("---+") if cell.has_wall("N") else w("   +")
         print(top_line)
 
-        # Draw each row of cells
+        # --- rows ---
         for y in range(maze.height):
-            # Middle line (cell content with walls)
             middle_line = ""
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
-                # Add left wall if exists, otherwise space
-                if (cell.is_fixed()):
-                    middle_line += "|"
+
+                # left wall
+                if cell.is_fixed():
+                    middle_line += w("|")
                 else:
-                    middle_line += "|" if cell.has_wall("W") else " "
-                # Add cell content (3 spaces)
-                if (x, y) == maze.entry:
+                    middle_line += w("|") if cell.has_wall("W") else " "
+
+                # content
+                pos = (x, y)
+                if pos == maze.entry:
                     middle_line += " x "
-                elif (x, y) == maze.exit:
+                elif pos == maze.exit:
                     middle_line += " o "
+                elif pos in path_set and not cell.is_fixed():
+                    middle_line += pch(" . ")
                 else:
-                    if (cell.is_fixed()):
-                        middle_line += "***"
+                    if cell.is_fixed():
+                        middle_line += logo("***")
                     else:
                         middle_line += "   "
 
-            # Add right wall for the last cell
             last_cell = maze.get_cell(maze.width - 1, y)
-            middle_line += "|" if last_cell.has_wall("E") else " "
+            middle_line += w("|") if last_cell.has_wall("E") else " "
             print(middle_line)
 
-            # Draw bottom border for this row
-            bottom_line = "+"
+            # bottom border
+            bottom_line = w("+")
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
-                if (cell.is_fixed()):
-                    bottom_line += "---+"
+                if cell.is_fixed():
+                    bottom_line += logo("___") + w("+")
                 else:
-                    bottom_line += "---+" if cell.has_wall("S") else "   +"
+                    bottom_line += w("---+") if cell.has_wall("S") else w("   +")
             print(bottom_line)
+
+    def _animate_path_once(self, maze: Maze, path: List[Pos]) -> None:
+        """
+        Reveal the path progressively (ASCII animation).
+        """
+        for k in range(1, len(path) + 1):
+            self._clear()
+            self.draw_maze(maze, path=path[:k])
+            self._print_menu()
+            time.sleep(self.path_delay)
+
+    def _shortest_path(self, maze: Maze) -> Optional[List[Pos]]:
+        start = maze.entry
+        goal = maze.exit
+
+        if maze.get_cell(*start).is_fixed() or maze.get_cell(*goal).is_fixed():
+            return None
+
+        q = deque([start])
+        prev: Dict[Pos, Optional[Pos]] = {start: None}
+
+        while q:
+            x, y = q.popleft()
+            if (x, y) == goal:
+                break
+
+            cell = maze.get_cell(x, y)
+
+            candidates = [
+                ("N", (x, y - 1)),
+                ("S", (x, y + 1)),
+                ("W", (x - 1, y)),
+                ("E", (x + 1, y)),
+            ]
+
+            for d, (nx, ny) in candidates:
+                if not (0 <= nx < maze.width and 0 <= ny < maze.height):
+                    continue
+                if cell.has_wall(d):
+                    continue
+
+                ncell = maze.get_cell(nx, ny)
+                if ncell.is_fixed():
+                    continue
+
+                np = (nx, ny)
+                if np in prev:
+                    continue
+
+                prev[np] = (x, y)
+                q.append(np)
+
+        if goal not in prev:
+            return None
+
+        path: List[Pos] = []
+        cur: Optional[Pos] = goal
+        while cur is not None:
+            path.append(cur)
+            cur = prev[cur]
+        path.reverse()
+        return path
+
+    def _print_menu(self) -> None:
+        print()
+        print(
+            "Commands: [r] regenerate | [p] path on/off | [a] path anim on/off | "
+            "[c] wall color | [l] 42 color | [color] ansi on/off | [q] quit"
+        )
+
+    def _clear(self) -> None:
+        # ANSI clear screen + cursor home
+        print("\x1b[2J\x1b[H", end="")

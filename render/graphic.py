@@ -2,17 +2,23 @@
 Docstring for render.graphic
 """
 
+from collections import deque
+from typing import Dict, List, Optional, Tuple
 
 import pygame
+
 from core.maze import Maze
 from .render import Render
+from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
+
+Pos = Tuple[int, int]
 
 
 class PygameRender(Render):
     def __init__(
         self,
         cell_size: int = 32,
-        wall_thickness: int = 3,
+        wall_thickness: int = 5,
         margin: int = 20,
         fps: int = 60,
     ) -> None:
@@ -21,20 +27,72 @@ class PygameRender(Render):
         self.margin = margin
         self.fps = fps
 
-        # Colors
+        # UI toggles
+        self.show_path = False
+        self.colorize_logo_42 = True
+
+        # Path animation state
+        self.path_animating = False
+        self.path_anim_index = 0
+        self.path_step_ms = 25
+        self._last_path_step_ms = 0
+
+        # Colors / palettes
         self.bg = (20, 20, 20)
-        self.wall = (240, 240, 240)
-        self.fixed_fill = (70, 70, 70)
+        self.fixed_fill_default = (70, 70, 70)
+        self.fixed_fill_42 = (120, 90, 220)
+        self.path_color = (255, 215, 0)
         self.entry_color = (80, 200, 120)
         self.exit_color = (220, 120, 120)
 
-    def draw_maze(self, maze: Maze) -> None:
+        self.wall_palettes = [
+            (240, 240, 240),
+            (0, 200, 255),
+            (255, 120, 120),
+            (120, 255, 120),
+            (255, 200, 0),
+        ]
+        self.wall_palette_index = 0
+
+        self._cached_path: Optional[List[Pos]] = None
+
+        self.menu_height = 90
+        self.menu_bg = (10, 10, 10)
+        self.menu_text = (230, 230, 230)
+        self.menu_accent = (160, 160, 160)
+
+    @property
+    def wall(self):
+        return self.wall_palettes[self.wall_palette_index]
+
+    def _start_path_animation(self, maze: Maze) -> None:
+        """
+        Ensure cached path exists, then start animation from the beginning.
+        Safe to call after regenerating.
+        """
+        if self._cached_path is None:
+            self._cached_path = self._shortest_path(maze)
+
+        # even if path is None/empty, keep state consistent
+        self.path_animating = True
+        self.path_anim_index = 0
+        self._last_path_step_ms = pygame.time.get_ticks()
+
+    def draw_maze(
+        self,
+        maze: Maze,
+        *,
+        generator: Optional[MazeGenerator] = None,
+        algorithm: str = "dfs",
+        seed: Optional[int] = None,
+        apply_logo_42: bool = False,
+    ) -> None:
         pygame.init()
 
         width_px = self.margin * 2 + maze.width * self.cell_size
         height_px = self.margin * 2 + maze.height * self.cell_size
 
-        screen = pygame.display.set_mode((width_px, height_px))
+        screen = pygame.display.set_mode((width_px, height_px + self.menu_height))
         pygame.display.set_caption("Maze (Pygame Render)")
 
         clock = pygame.time.Clock()
@@ -45,20 +103,114 @@ class PygameRender(Render):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                # optional: ESC closes
-                if (event.type == pygame.KEYDOWN and
-                   event.key == pygame.K_ESCAPE):
-                    running = False
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+
+                    # Re-generate
+                    if event.key == pygame.K_r:
+                        if generator is None:
+                            print("No generator provided to PygameRender.draw_maze(...). Can't regenerate.")
+                        else:
+                            new_maze = Maze(
+                                width=maze.width,
+                                height=maze.height,
+                                perfect=maze.perfect,
+                                seed=seed or maze.seed,
+                                entry=maze.entry,
+                                exit=maze.exit,
+                            )
+
+                            if apply_logo_42:
+                                try:
+                                    generator.set_logo_42(new_maze)
+                                except InvalidEntryOrExit:
+                                    print("Entry/Exit overlap with logo 42. Skipping logo.")
+
+                            generator.generate_maze(new_maze, algorithm)
+
+                            maze = new_maze
+                            self._cached_path = None  # invalidate cache
+
+                            # IMPORTANT: if path was enabled, recompute + restart animation
+                            if self.show_path:
+                                self._start_path_animation(maze)
+                            else:
+                                self.path_animating = False
+                                self.path_anim_index = 0
+
+                    # Show/Hide shortest path
+                    if event.key == pygame.K_p:
+                        self.show_path = not self.show_path
+
+                        if not self.show_path:
+                            self.path_animating = False
+                            self.path_anim_index = 0
+                        else:
+                            self._start_path_animation(maze)
+
+                    # Change wall colors
+                    if event.key == pygame.K_c:
+                        self.wall_palette_index = (self.wall_palette_index + 1) % len(self.wall_palettes)
+
+                    # Toggle logo 42 color
+                    if event.key == pygame.K_l:
+                        self.colorize_logo_42 = not self.colorize_logo_42
 
             # --- draw ---
             screen.fill(self.bg)
             self._draw_grid_and_walls(screen, maze)
+
+            if self.show_path:
+                if self._cached_path is None:
+                    self._cached_path = self._shortest_path(maze)
+
+                if self._cached_path:
+                    if self.path_animating:
+                        now = pygame.time.get_ticks()
+                        if now - self._last_path_step_ms >= self.path_step_ms:
+                            self._last_path_step_ms = now
+                            self.path_anim_index += 1
+
+                            if self.path_anim_index >= len(self._cached_path):
+                                self.path_anim_index = len(self._cached_path)
+                                self.path_animating = False
+
+                    partial_path = self._cached_path[: self.path_anim_index]
+                    self._draw_path(screen, maze, partial_path)
+
             self._draw_entry_exit(screen, maze)
+            self._draw_menu(screen, maze)
 
             pygame.display.flip()
             clock.tick(self.fps)
 
         pygame.quit()
+
+    def _draw_menu(self, screen: pygame.Surface, maze: Maze) -> None:
+        maze_h_px = self.margin * 2 + maze.height * self.cell_size
+        menu_rect = pygame.Rect(0, maze_h_px, screen.get_width(), self.menu_height)
+
+        pygame.draw.rect(screen, self.menu_bg, menu_rect)
+        pygame.draw.line(screen, self.menu_accent, (0, maze_h_px), (screen.get_width(), maze_h_px), 2)
+
+        font = pygame.font.SysFont(None, 22)
+        font_small = pygame.font.SysFont(None, 20)
+
+        line1 = "R: Regenerate   P: Show/Hide shortest path"
+        line2 = "C: Change color   L: Toggle 42 color   ESC: Quit"
+        line3 = f"Path: {'ON' if self.show_path else 'OFF'}    Wall palette: {self.wall_palette_index + 1}"
+
+        text1 = font.render(line1, True, self.menu_text)
+        text2 = font.render(line2, True, self.menu_text)
+        text3 = font_small.render(line3, True, self.menu_text)
+
+        pad_x = 12
+        pad_y = 10
+        screen.blit(text1, (pad_x, maze_h_px + pad_y))
+        screen.blit(text2, (pad_x, maze_h_px + pad_y + 28))
+        screen.blit(text3, (pad_x, maze_h_px + pad_y + 56))
 
     def _draw_grid_and_walls(self, screen: pygame.Surface, maze: Maze) -> None:
         cs = self.cell_size
@@ -74,14 +226,11 @@ class PygameRender(Render):
                 x1 = x0 + cs
                 y1 = y0 + cs
 
-                # Fill fixed cells
                 if cell.is_fixed():
-                    pygame.draw.rect(screen, self.fixed_fill,
-                                     pygame.Rect(x0, y0, cs, cs))
+                    fill = self.fixed_fill_42 if self.colorize_logo_42 else self.fixed_fill_default
+                    pygame.draw.rect(screen, fill, pygame.Rect(x0, y0, cs, cs))
 
-                # Draw walls if present
                 fixed = cell.is_fixed()
-
                 if fixed or cell.has_wall("N"):
                     pygame.draw.line(screen, self.wall, (x0, y0), (x1, y0), t)
                 if fixed or cell.has_wall("S"):
@@ -95,16 +244,84 @@ class PygameRender(Render):
         cs = self.cell_size
         m = self.margin
 
-        def cell_rect(pos):
+        def cell_rect(pos: Pos) -> pygame.Rect:
             x, y = pos
             return pygame.Rect(m + x * cs, m + y * cs, cs, cs)
 
-        # Entry
         if getattr(maze, "entry", None) is not None:
-            pygame.draw.rect(screen, self.entry_color,
-                             cell_rect(maze.entry).inflate(-cs // 3, -cs // 3))
+            pygame.draw.rect(
+                screen,
+                self.entry_color,
+                cell_rect(maze.entry).inflate(-cs // 3, -cs // 3),
+            )
 
-        # Exit
         if getattr(maze, "exit", None) is not None:
-            pygame.draw.rect(screen, self.exit_color,
-                             cell_rect(maze.exit).inflate(-cs // 3, -cs // 3))
+            pygame.draw.rect(
+                screen,
+                self.exit_color,
+                cell_rect(maze.exit).inflate(-cs // 3, -cs // 3),
+            )
+
+    def _shortest_path(self, maze: Maze) -> Optional[List[Pos]]:
+        start = maze.entry
+        goal = maze.exit
+
+        if maze.get_cell(*start).is_fixed() or maze.get_cell(*goal).is_fixed():
+            return None
+
+        q = deque([start])
+        prev: Dict[Pos, Optional[Pos]] = {start: None}
+
+        while q:
+            x, y = q.popleft()
+            if (x, y) == goal:
+                break
+
+            cell = maze.get_cell(x, y)
+            candidates = [
+                ("N", (x, y - 1)),
+                ("S", (x, y + 1)),
+                ("W", (x - 1, y)),
+                ("E", (x + 1, y)),
+            ]
+
+            for d, (nx, ny) in candidates:
+                if not (0 <= nx < maze.width and 0 <= ny < maze.height):
+                    continue
+                if cell.has_wall(d):
+                    continue
+
+                ncell = maze.get_cell(nx, ny)
+                if ncell.is_fixed():
+                    continue
+
+                np = (nx, ny)
+                if np in prev:
+                    continue
+
+                prev[np] = (x, y)
+                q.append(np)
+
+        if goal not in prev:
+            return None
+
+        path: List[Pos] = []
+        cur: Optional[Pos] = goal
+        while cur is not None:
+            path.append(cur)
+            cur = prev[cur]
+        path.reverse()
+        return path
+
+    def _draw_path(self, screen: pygame.Surface, maze: Maze, path: Optional[List[Pos]]) -> None:
+        if not path:
+            return
+
+        cs = self.cell_size
+        m = self.margin
+
+        for (x, y) in path:
+            x0 = m + x * cs
+            y0 = m + y * cs
+            rect = pygame.Rect(x0, y0, cs, cs).inflate(-cs // 2, -cs // 2)
+            pygame.draw.rect(screen, self.path_color, rect)
