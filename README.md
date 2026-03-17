@@ -61,3 +61,12 @@ project/
 | 1101    | 13      | 0xD         | W, S, N            |
 | 1110    | 14      | 0xE         | W, S, E            |
 | 1111    | 15      | 0xF         | -All- (W, S, E, N) |
+
+
+python3 -m venv environment
+
+source environment/bin/activate
+
+python -m pip install pygame
+
+python3 -m a_maze_ing

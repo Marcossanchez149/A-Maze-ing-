@@ -80,13 +80,15 @@ class PygameRender(Render):
                                      pygame.Rect(x0, y0, cs, cs))
 
                 # Draw walls if present
-                if cell.has_wall("N"):
+                fixed = cell.is_fixed()
+
+                if fixed or cell.has_wall("N"):
                     pygame.draw.line(screen, self.wall, (x0, y0), (x1, y0), t)
-                if cell.has_wall("S"):
+                if fixed or cell.has_wall("S"):
                     pygame.draw.line(screen, self.wall, (x0, y1), (x1, y1), t)
-                if cell.has_wall("W"):
+                if fixed or cell.has_wall("W"):
                     pygame.draw.line(screen, self.wall, (x0, y0), (x0, y1), t)
-                if cell.has_wall("E"):
+                if fixed or cell.has_wall("E"):
                     pygame.draw.line(screen, self.wall, (x1, y0), (x1, y1), t)
 
     def _draw_entry_exit(self, screen: pygame.Surface, maze: Maze) -> None:
