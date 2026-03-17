@@ -121,10 +121,16 @@ class Maze:
         else:
             raise ValueError("Cells are not adjacent")
 
-    def print_hex(self) -> None:
-        for y in range(self.height):
-            row = ""
-            for x in range(self.width):
-                cell = self.get_cell(x, y)
-                row += cell.to_hex()
-            print(row)
+    def save_hex(self, file_path: str) -> None:
+        """
+        Save the maze in the same format as print_hex(), one row per line.
+        """
+        with open(file_path, "w", encoding="utf-8") as f:
+            for y in range(self.height):
+                row = ""
+                for x in range(self.width):
+                    cell = self.get_cell(x, y)
+                    row += cell.to_hex()
+                f.write(row + "\n")
+            f.write(f"\n{self.entry[0]},{self.entry[1]}\n")
+            f.write(f"{self.exit[0]},{self.exit[1]}\n")

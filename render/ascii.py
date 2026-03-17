@@ -2,7 +2,7 @@ import time
 from typing import List, Optional, Tuple
 
 from core.maze import Maze
-from core.solver import shortest_path
+from core.solver import shortest_path, save_solution
 from .render import Render
 
 from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
@@ -11,7 +11,8 @@ Pos = Tuple[int, int]
 
 
 class AsciiRender(Render):
-    def __init__(self) -> None:
+    def __init__(self, file_path: str) -> None:
+        self.file_path = file_path
         # toggles
         self.show_path = False
         self.use_color = True
@@ -56,6 +57,7 @@ class AsciiRender(Render):
           a = toggle path animation
           q = quit
         """
+        save_solution(maze, shortest_path(maze), self.file_path)
         while True:
             self._clear()
 
@@ -71,7 +73,6 @@ class AsciiRender(Render):
             cmd = input("> ").strip().lower()
             if cmd in ("q", "quit", "exit"):
                 return
-
             if cmd == "r":
                 new_maze = Maze(
                     width=maze.width,
@@ -91,10 +92,12 @@ class AsciiRender(Render):
                 generator.generate_maze(new_maze, algorithm)
                 maze = new_maze
                 self._cached_path = None
+                save_solution(maze, shortest_path(maze), self.file_path)
                 if self.show_path:
                     self._cached_path = shortest_path(maze)
                     if self.animate_path and self._cached_path:
                         self._animate_path_once(maze, self._cached_path)
+
             elif cmd == "p":
                 self.show_path = not self.show_path
 

@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple
 import pygame
 
 from core.maze import Maze
-from core.solver import shortest_path
+from core.solver import shortest_path, save_solution
 from .render import Render
 from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
 
@@ -20,7 +20,9 @@ class PygameRender(Render):
         wall_thickness: int = 5,
         margin: int = 20,
         fps: int = 60,
+        output_file: str ="file.txt"
     ) -> None:
+        self.output_file = output_file
         self.cell_size = cell_size
         self.wall_thickness = wall_thickness
         self.margin = margin
@@ -95,7 +97,7 @@ class PygameRender(Render):
         pygame.display.set_caption("Maze (Pygame Render)")
 
         clock = pygame.time.Clock()
-
+        save_solution(maze, shortest_path(maze), self.output_file)
         running = True
         while running:
             # --- events ---
@@ -131,7 +133,7 @@ class PygameRender(Render):
 
                             maze = new_maze
                             self._cached_path = None  # invalidate cache
-
+                            save_solution(maze, shortest_path(maze), self.output_file)
                             # IMPORTANT: if path was enabled, recompute + restart animation
                             if self.show_path:
                                 self._start_path_animation(maze)

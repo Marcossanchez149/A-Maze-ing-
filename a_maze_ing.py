@@ -22,6 +22,7 @@ def main():
         exit = config.get("exit")
         algorithm = config.get("algorithm")
         seed = config.get("seed")
+        output_file = config.get("output_file")
 
         maze = Maze(
             width=width,
@@ -37,11 +38,9 @@ def main():
             return
         generator.generate_maze(maze, algorithm)
 
-        print("Maze in HEX:")
-        maze.print_hex()
-
         print("\nMaze in Ascii:\n")
-        AsciiRender().run(
+        """
+        AsciiRender(output_file).run(
             maze,
             generator=generator,
             algorithm=algorithm,
@@ -49,7 +48,7 @@ def main():
             seed=seed,
         )
         """
-        renderer = PygameRender(cell_size=32)
+        renderer = PygameRender(cell_size=32, output_file=output_file)
         renderer.draw_maze(
             maze,
             generator=generator,
@@ -57,7 +56,6 @@ def main():
             apply_logo_42=True,
             seed=seed,
         )
-        """
     except ValueError as e:
         print(e)
 
