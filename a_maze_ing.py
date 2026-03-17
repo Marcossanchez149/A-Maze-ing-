@@ -39,8 +39,6 @@ def main():
             return
         generator.generate_maze(maze, algorithm)
 
-        print("\nMaze in Ascii:1\n")
-        print("\nMaze in graphic:2\n")
         if display == "ascii":
             AsciiRender(output_file).run(
                 maze,

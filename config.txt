@@ -5,5 +5,5 @@ EXIT=1,1
 OUTPUT_FILE=maze.txt
 PERFECT=True
 ALGORITHM=backtracking
-DISPLAY=ascii
+DISPLAY=graphic
 SEED=0
