@@ -108,7 +108,8 @@ class AsciiRender(Render):
                 # if turning off, nothing special
 
             elif cmd == "c":
-                self.wall_palette_index = (self.wall_palette_index + 1) % len(self.wall_palettes)
+                self.wall_palette_index = ((self.wall_palette_index + 1) %
+                                           len(self.wall_palettes))
 
             elif cmd == "l":
                 self.colorize_logo_42 = not self.colorize_logo_42
@@ -119,13 +120,16 @@ class AsciiRender(Render):
             elif cmd == "a":
                 self.animate_path = not self.animate_path
 
-    def draw_maze(self, maze: Maze, *, path: Optional[List[Pos]] = None) -> None:
+    def draw_maze(self, maze: Maze, *,
+                  path: Optional[List[Pos]] = None) -> None:
         path_set = set(path or [])
 
-        wall_color = self.wall_palettes[self.wall_palette_index] if self.use_color else ""
+        wall_color = self.wall_palettes[self.wall_palette_index] if (
+            self.use_color) else ""
         reset = self.reset if self.use_color else ""
         path_color = self.path_color if self.use_color else ""
-        logo_color = (self.logo_42_color if (self.use_color and self.colorize_logo_42) else "")
+        logo_color = (self.logo_42_color if (self.use_color and
+                                             self.colorize_logo_42) else "")
 
         def w(s: str) -> str:
             return f"{wall_color}{s}{reset}" if self.use_color else s
@@ -183,7 +187,8 @@ class AsciiRender(Render):
                 if cell.is_fixed():
                     bottom_line += logo("___") + w("+")
                 else:
-                    bottom_line += w("---+") if cell.has_wall("S") else w("   +")
+                    bottom_line += w("---+") if (
+                        cell.has_wall("S")) else w("   +")
             print(bottom_line)
 
     def _animate_path_once(self, maze: Maze, path: List[Pos]) -> None:
@@ -199,7 +204,8 @@ class AsciiRender(Render):
     def _print_menu(self) -> None:
         print()
         print(
-            "Commands: [r] regenerate | [p] path on/off | [a] path anim on/off | "
+            "Commands: [r] regenerate | [p] path"
+            " on/off | [a] path anim on/off | "
             "[c] wall color | [l] 42 color | [color] ansi on/off | [q] quit"
         )
 

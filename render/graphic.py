@@ -13,6 +13,7 @@ from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
 
 Pos = Tuple[int, int]
 
+
 class PygameRender(Render):
     def __init__(
         self,
@@ -20,7 +21,7 @@ class PygameRender(Render):
         wall_thickness: int = 5,
         margin: int = 20,
         fps: int = 60,
-        output_file: str ="file.txt"
+        output_file: str = "file.txt"
     ) -> None:
         self.output_file = output_file
         self.cell_size = cell_size
@@ -93,7 +94,8 @@ class PygameRender(Render):
         width_px = self.margin * 2 + maze.width * self.cell_size
         height_px = self.margin * 2 + maze.height * self.cell_size
 
-        screen = pygame.display.set_mode((width_px, height_px + self.menu_height))
+        screen = pygame.display.set_mode((width_px, height_px +
+                                          self.menu_height))
         pygame.display.set_caption("Maze (Pygame Render)")
 
         clock = pygame.time.Clock()
@@ -112,7 +114,9 @@ class PygameRender(Render):
                     # Re-generate
                     if event.key == pygame.K_r:
                         if generator is None:
-                            print("No generator provided to PygameRender.draw_maze(...). Can't regenerate.")
+                            print("No generator provided to "
+                                  "PygameRender.draw_maze(...)."
+                                  " Can't regenerate.")
                         else:
                             new_maze = Maze(
                                 width=maze.width,
@@ -127,14 +131,16 @@ class PygameRender(Render):
                                 try:
                                     generator.set_logo_42(new_maze)
                                 except InvalidEntryOrExit:
-                                    print("Entry/Exit overlap with logo 42. Skipping logo.")
+                                    print("Entry/Exit overlap with"
+                                          " logo 42. Skipping logo.")
 
                             generator.generate_maze(new_maze, algorithm)
 
                             maze = new_maze
                             self._cached_path = None  # invalidate cache
-                            save_solution(maze, shortest_path(maze), self.output_file)
-                            # IMPORTANT: if path was enabled, recompute + restart animation
+                            save_solution(maze, shortest_path(maze),
+                                          self.output_file)
+                            # if path -> recompute + restart animation
                             if self.show_path:
                                 self._start_path_animation(maze)
                             else:
@@ -153,7 +159,9 @@ class PygameRender(Render):
 
                     # Change wall colors
                     if event.key == pygame.K_c:
-                        self.wall_palette_index = (self.wall_palette_index + 1) % len(self.wall_palettes)
+                        self.wall_palette_index = (
+                            (self.wall_palette_index + 1) %
+                            len(self.wall_palettes))
 
                     # Toggle logo 42 color
                     if event.key == pygame.K_l:
@@ -191,17 +199,22 @@ class PygameRender(Render):
 
     def _draw_menu(self, screen: pygame.Surface, maze: Maze) -> None:
         maze_h_px = self.margin * 2 + maze.height * self.cell_size
-        menu_rect = pygame.Rect(0, maze_h_px, screen.get_width(), self.menu_height)
+        menu_rect = pygame.Rect(0,
+                                maze_h_px, screen.get_width(),
+                                self.menu_height)
 
         pygame.draw.rect(screen, self.menu_bg, menu_rect)
-        pygame.draw.line(screen, self.menu_accent, (0, maze_h_px), (screen.get_width(), maze_h_px), 2)
+        pygame.draw.line(screen, self.menu_accent, (0, maze_h_px),
+                         (screen.get_width(), maze_h_px), 2)
 
         font = pygame.font.SysFont(None, 22)
         font_small = pygame.font.SysFont(None, 20)
 
         line1 = "R: Regenerate   P: Show/Hide shortest path"
         line2 = "C: Change color   L: Toggle 42 color   ESC: Quit"
-        line3 = f"Path: {'ON' if self.show_path else 'OFF'}    Wall palette: {self.wall_palette_index + 1}"
+        line3 = f"Path: {'ON' if (
+            self.show_path) else (
+                'OFF')}    Wall palette: {self.wall_palette_index + 1}"
 
         text1 = font.render(line1, True, self.menu_text)
         text2 = font.render(line2, True, self.menu_text)
@@ -228,7 +241,8 @@ class PygameRender(Render):
                 y1 = y0 + cs
 
                 if cell.is_fixed():
-                    fill = self.fixed_fill_42 if self.colorize_logo_42 else self.fixed_fill_default
+                    fill = self.fixed_fill_42 if (
+                        self.colorize_logo_42) else self.fixed_fill_default
                     pygame.draw.rect(screen, fill, pygame.Rect(x0, y0, cs, cs))
 
                 fixed = cell.is_fixed()
@@ -263,7 +277,8 @@ class PygameRender(Render):
                 cell_rect(maze.exit).inflate(-cs // 3, -cs // 3),
             )
 
-    def _draw_path(self, screen: pygame.Surface, maze: Maze, path: Optional[List[Pos]]) -> None:
+    def _draw_path(self, screen: pygame.Surface,
+                   maze: Maze, path: Optional[List[Pos]]) -> None:
         if not path:
             return
 
