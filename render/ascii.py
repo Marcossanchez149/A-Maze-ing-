@@ -78,7 +78,7 @@ class AsciiRender(Render):
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
                 if (cell.is_fixed()):
-                    bottom_line += "___+"
+                    bottom_line += "---+"
                 else:
                     bottom_line += "---+" if cell.has_wall("S") else "   +"
             print(bottom_line)

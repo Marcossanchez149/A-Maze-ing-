@@ -4,7 +4,7 @@ from config.parser import parse_config_file
 from config.validator import validate_config
 from core.maze import Maze
 from generators.maze_generator import MazeGenerator
-from render import AsciiRender
+from render import AsciiRender, PygameRender
 
 
 def main():
@@ -43,6 +43,9 @@ def main():
 
         print("\nMaze in Ascii:\n")
         ascii_render.draw_maze(maze)
+
+        renderer = PygameRender(cell_size=32)
+        renderer.draw_maze(maze)
 
     except ValueError as e:
         print(e)
