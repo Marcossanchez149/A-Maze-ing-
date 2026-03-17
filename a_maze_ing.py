@@ -23,6 +23,7 @@ def main():
         algorithm = config.get("algorithm")
         seed = config.get("seed")
         output_file = config.get("output_file")
+        display = config.get("display")  # "ascii", "graphic"
 
         maze = Maze(
             width=width,
@@ -38,24 +39,25 @@ def main():
             return
         generator.generate_maze(maze, algorithm)
 
-        print("\nMaze in Ascii:\n")
-        """
-        AsciiRender(output_file).run(
-            maze,
-            generator=generator,
-            algorithm=algorithm,
-            apply_logo_42=True,
-            seed=seed,
-        )
-        """
-        renderer = PygameRender(cell_size=32, output_file=output_file)
-        renderer.draw_maze(
-            maze,
-            generator=generator,
-            algorithm=algorithm,
-            apply_logo_42=True,
-            seed=seed,
-        )
+        print("\nMaze in Ascii:1\n")
+        print("\nMaze in graphic:2\n")
+        if display == "ascii":
+            AsciiRender(output_file).run(
+                maze,
+                generator=generator,
+                algorithm=algorithm,
+                apply_logo_42=True,
+                seed=seed,
+            )
+        else:
+            PygameRender(cell_size=32,
+                         output_file=output_file).draw_maze(
+                maze,
+                generator=generator,
+                algorithm=algorithm,
+                apply_logo_42=True,
+                seed=seed,
+            )
     except ValueError as e:
         print(e)
 
