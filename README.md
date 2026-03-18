@@ -1,3 +1,4 @@
+*This project has been created as part of the 42 curriculum by marcsan2, kpanfero*
 # A-Maze-Ing
 
 Project for maze generation, validation, and solving in Python, with support for ASCII and graphical rendering, animations, and unit tests.
