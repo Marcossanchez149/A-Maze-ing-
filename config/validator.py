@@ -3,6 +3,7 @@ validator.py
 Contains functions to validate config file content.
 """
 
+from typing import Tuple, cast
 from .types import ConfigDict
 from .constants import (
     REQUIRED_KEYS,
@@ -174,10 +175,10 @@ def validate_business_rules(config: ConfigDict) -> None:
             - If `entry` or `exit` are out of bounds
             based on `width` and `height`.
     """
-    width = config.get("width")
-    height = config.get("height")
-    entry = config.get("entry")
-    exit = config.get("exit")
+    width: int = cast(int, config.get("width"))
+    height: int = cast(int, config.get("height"))
+    entry: tuple[int, int] = cast(Tuple[int, int], config["entry"])
+    exit: tuple[int, int] = cast(Tuple[int, int], config["exit"])
 
     if width > MAX_WIDTH:
         raise ValueError("Width must be no greater " +

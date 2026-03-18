@@ -42,7 +42,7 @@ class Cell:
         self.__is_path = False
         self.__is_fixed = False
 
-    def set_as_fixed(self):
+    def set_as_fixed(self) -> None:
         self.__is_fixed = True
 
     def is_fixed(self) -> bool:

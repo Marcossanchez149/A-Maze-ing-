@@ -33,8 +33,8 @@ class Maze:
         perfect: bool = True,
         seed: int = 1,
         entry: Tuple[int, int] = (0, 0),
-        exit: Tuple[int, int] = None
-    ):
+        exit: Tuple[int, int] = (0, 0)
+    ) -> None:
         """
         Initializes a Maze instance with the given dimensions and options.
 

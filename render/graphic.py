@@ -64,7 +64,7 @@ class PygameRender(Render):
         self.menu_accent = (160, 160, 160)
 
     @property
-    def wall(self):
+    def wall(self) -> tuple[int, int, int]:
         return self.wall_palettes[self.wall_palette_index]
 
     def _start_path_animation(self, maze: Maze) -> None:

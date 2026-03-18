@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from typing import Tuple, cast
 from config.parser import parse_config_file
 from config.validator import validate_config
 from core.maze import Maze
@@ -8,7 +9,7 @@ from render import AsciiRender, PygameRender
 import sys
 
 
-def main():
+def main() -> None:
     print("A-Maze-Ing\n")
     try:
         if not (len(sys.argv) > 1):
@@ -21,14 +22,14 @@ def main():
         print("-------Config-------")
         print(config)
         print()
-        width = config.get("width")
-        height = config.get("height")
-        entry = config.get("entry")
-        exit = config.get("exit")
-        algorithm = config.get("algorithm")
-        seed = config.get("seed")
-        output_file = config.get("output_file")
-        display = config.get("display")  # "ascii", "graphic"
+        width = cast(int, config["width"])
+        height = cast(int, config["height"])
+        entry = cast(Tuple[int, int], config["entry"])
+        exit = cast(Tuple[int, int], config["exit"])
+        algorithm = cast(str, config["algorithm"])
+        seed = cast(int, config["seed"])
+        output_file: str = cast(str, config["output_file"])
+        display: str = cast(str, config["display"])  # "ascii", "graphic"
 
         maze = Maze(
             width=width,

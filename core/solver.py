@@ -83,7 +83,8 @@ def path_to_directions(path: List[Pos]) -> str:
     return "".join(dirs)
 
 
-def save_solution(maze: Maze, path: List[Pos], file_path: str) -> bool:
+def save_solution(maze: Maze, path: Optional[List[Pos]],
+                  file_path: str) -> bool:
     """
     Compute shortest path and save it as a directions string, e.g. "NSWENSW".
     Returns True if saved, False if no solution.

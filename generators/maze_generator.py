@@ -27,7 +27,7 @@ class MazeGenerator:
             raise ValueError(f"Unknown algorithm: {algorithm}")
     # definir los 1 a x algoritmos
 
-    def _generate_dfs(self, maze: Maze):
+    def _generate_dfs(self, maze: Maze) -> None:
         # Algoritmo de generacion backtracking
         # Va avanzando y mirando a los vecions aleatoriamente
         # abriendo paredes al azar
@@ -67,7 +67,7 @@ class MazeGenerator:
             else:
                 stack.pop()
 
-    def _generate_prim(self, maze: Maze):
+    def _generate_prim(self, maze: Maze) -> None:
         if (self.__seed == 0):
             random.seed(None)
         else:
@@ -84,7 +84,7 @@ class MazeGenerator:
         start_cell.visited = True
         frontier = []
 
-        def add_frontier_neighbors(cell):
+        def add_frontier_neighbors(cell: Cell) -> None:
             for dx, dy in directions:
                 nx = cell.x + dx
                 ny = cell.y + dy
@@ -114,7 +114,7 @@ class MazeGenerator:
             current_cell.visited = True
             add_frontier_neighbors(current_cell)
 
-    def _generate_kruskal(self, maze: Maze):
+    def _generate_kruskal(self, maze: Maze) -> None:
         if (self.__seed == 0):
             random.seed(None)
         else:
@@ -141,12 +141,12 @@ class MazeGenerator:
                 cell = maze.get_cell(x, y)
                 parent[cell] = cell
 
-        def find(cell):
+        def find(cell: Cell) -> Cell:
             if parent[cell] != cell:
                 parent[cell] = find(parent[cell])
             return parent[cell]
 
-        def union(cell1, cell2):
+        def union(cell1: Cell, cell2: Cell) -> None:
             root1 = find(cell1)
             root2 = find(cell2)
             if root1 != root2:
