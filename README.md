@@ -1,10 +1,10 @@
 *This project has been created as part of the 42 curriculum by marcsan2, kpanfero*
 
 # A-Maze-Ing
+--------------------------------------------------------------------------------
 # Description:
 This project is a maze generator developed in Python 3.10+. It takes a configuration file to generate a perfect maze (with a single path between the entry and exit) and writes it to a file using a hexadecimal representation for its walls. Additionally, it includes a visual representation (either terminal ASCII rendering or a graphical display) that clearly shows the walls, entry, exit, the shortest solution path, and a "42" pattern drawn by fully closed cells
 You can chose wich one of the three algorithms you can use for generating the maze.
---------------------------------------------------------------------------------
 
 # Instructions (Installation & Usage)
 The project includes a Makefile to automate common tasks. You can use the following rules:
