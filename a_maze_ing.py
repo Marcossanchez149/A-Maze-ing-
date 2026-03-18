@@ -5,12 +5,17 @@ from config.validator import validate_config
 from core.maze import Maze
 from generators.maze_generator import MazeGenerator
 from render import AsciiRender, PygameRender
+import sys
 
 
 def main():
     print("A-Maze-Ing\n")
     try:
-        config = parse_config_file("config.txt")
+        if not (len(sys.argv) > 1):
+            print("Invalid arguments, example -> "
+                  "python3 a_maze_ing.py config.txt")
+            return
+        config = parse_config_file(sys.argv[1])
         validate_config(config)
 
         print("-------Config-------")
@@ -56,7 +61,7 @@ def main():
                 apply_logo_42=True,
                 seed=seed,
             )
-    except ValueError as e:
+    except (ValueError, FileNotFoundError) as e:
         print(e)
 
 
