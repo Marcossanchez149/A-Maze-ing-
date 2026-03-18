@@ -1,9 +1,22 @@
 *This project has been created as part of the 42 curriculum by marcsan2, kpanfero*
+
 # A-Maze-Ing
+# Description:
+This project is a maze generator developed in Python 3.10+. It takes a configuration file to generate a perfect maze (with a single path between the entry and exit) and writes it to a file using a hexadecimal representation for its walls. Additionally, it includes a visual representation (either terminal ASCII rendering or a graphical display) that clearly shows the walls, entry, exit, the shortest solution path, and a "42" pattern drawn by fully closed cells
+You can chose wich one of the three algorithms you can use for generating the maze.
+--------------------------------------------------------------------------------
 
-Project for maze generation, validation, and solving in Python, with support for ASCII and graphical rendering, animations, and unit tests.
+# Instructions (Installation & Usage)
+The project includes a Makefile to automate common tasks. You can use the following rules:
+make install: Installs project dependencies using a package manager of your choice (pip, uv, etc.).
+make run: Executes the main script of the project.
+make debug: Runs the main script in debug mode using Python's built-in debugger (e.g., pdb).
+make lint: Executes flake8 and mypy with the required flags to check typing and coding standards.
+make clean: Removes temporary files or caches (e.g., __pycache__, .mypy_cache).
 
----
+# Execution
+python3 a_maze_ing.py config.txt
+
 
 ## Project Structure
 
@@ -28,18 +41,10 @@ project/
 │   ├── parser.py
 │   ├── types.py
 │   └── validator.py
-├── animations/
-│   ├── __init__.py
-│   └── animator.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_maze.py
-│   ├── test_cell.py
-│   ├── test_generator.py
-│   └── test_solver.py
 ├── a_maze_ing.py
 ├── config.txt
 ├── .gitignore
+├── requirements.txt
 └── makefile
 
 ## Wall Combinations Table LSB
