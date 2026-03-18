@@ -212,9 +212,9 @@ class PygameRender(Render):
 
         line1 = "R: Regenerate   P: Show/Hide shortest path"
         line2 = "C: Change color   L: Toggle 42 color   ESC: Quit"
-        line3 = f"Path: {'ON' if (
-            self.show_path) else (
-                'OFF')}    Wall palette: {self.wall_palette_index + 1}"
+        line3 = (
+                 f"Path: {'ON' if self.show_path else 'OFF'} "
+                 f"Wall palette: {self.wall_palette_index + 1}")
 
         text1 = font.render(line1, True, self.menu_text)
         text2 = font.render(line2, True, self.menu_text)

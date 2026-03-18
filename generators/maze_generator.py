@@ -13,10 +13,6 @@ class MazeGenerator:
     # a string pero más limpio y profesional
     def __init__(self, seed: int):
         self.__seed = seed
-        if (seed == 0):
-            random.seed(None)
-        else:
-            random.seed(seed)
 
     def generate_maze(self, maze: Maze, algorithm: str) -> None:
         algorithm = algorithm.lower()
@@ -35,6 +31,10 @@ class MazeGenerator:
         # Algoritmo de generacion backtracking
         # Va avanzando y mirando a los vecions aleatoriamente
         # abriendo paredes al azar
+        if (self.__seed == 0):
+            random.seed(None)
+        else:
+            random.seed(self.__seed)
         rcellx = random.randint(0, maze.width - 1)
         rcelly = random.randint(0, maze.height - 1)
 
@@ -68,6 +68,10 @@ class MazeGenerator:
                 stack.pop()
 
     def _generate_prim(self, maze: Maze):
+        if (self.__seed == 0):
+            random.seed(None)
+        else:
+            random.seed(self.__seed)
         directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]
         check = True
         while check:
@@ -111,6 +115,10 @@ class MazeGenerator:
             add_frontier_neighbors(current_cell)
 
     def _generate_kruskal(self, maze: Maze):
+        if (self.__seed == 0):
+            random.seed(None)
+        else:
+            random.seed(self.__seed)
         edges = []
         for y in range(maze.height):
             for x in range(maze.width):

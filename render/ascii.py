@@ -78,7 +78,7 @@ class AsciiRender(Render):
                     width=maze.width,
                     height=maze.height,
                     perfect=maze.perfect,
-                    seed=seed or maze.seed,
+                    seed=maze.seed,
                     entry=maze.entry,
                     exit=maze.exit,
                 )
