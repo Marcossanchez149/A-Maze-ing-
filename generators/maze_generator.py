@@ -162,7 +162,7 @@ class MazeGenerator:
                 cell2.visited = True
 
     def set_logo_42(self, maze: Maze) -> bool:
-        if (maze.width < 7 or maze.height < 5):
+        if (maze.width < 9 or maze.height < 5):
             print("Size not enough for the 42 logo")
             return False
         pattern = [

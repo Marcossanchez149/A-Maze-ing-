@@ -145,7 +145,7 @@ class AsciiRender(Render):
         for x in range(maze.width):
             cell = maze.get_cell(x, 0)
             if cell.is_fixed():
-                top_line += logo("___") + w("+")
+                top_line += logo("---") + w("+")
             else:
                 top_line += w("---+") if cell.has_wall("N") else w("   +")
         print(top_line)
@@ -185,7 +185,7 @@ class AsciiRender(Render):
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
                 if cell.is_fixed():
-                    bottom_line += logo("___") + w("+")
+                    bottom_line += logo("---") + w("+")
                 else:
                     bottom_line += w("---+") if (
                         cell.has_wall("S")) else w("   +")
