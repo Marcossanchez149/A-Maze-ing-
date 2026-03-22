@@ -29,13 +29,15 @@ def main() -> None:
         algorithm = cast(str, config["algorithm"])
         seed = cast(int, config["seed"])
         output_file: str = cast(str, config["output_file"])
-        display: str = cast(str, config["display"])  # "ascii", "graphic"
+        display: str = cast(str, config["display"])
+        perfect: bool = cast(bool, config["perfect"])
 
         maze = Maze(
             width=width,
             height=height,
             entry=entry,
-            exit=exit
+            exit=exit,
+            perfect=perfect
         )
         generator = MazeGenerator(seed)
         try:
