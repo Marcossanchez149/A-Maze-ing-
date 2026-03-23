@@ -25,7 +25,28 @@ class MazeGenerator:
             self._generate_kruskal(maze)
         else:
             raise ValueError(f"Unknown algorithm: {algorithm}")
-    # definir los 1 a x algoritmos
+
+    def _carve_rooms(self, maze: Maze, attempts: int = 20) -> None:
+        room_sizes = [(2, 2), (2, 3), (3, 2)]
+
+        def carve_one():
+            w, h = random.choice(room_sizes)
+            x = random.randint(0, maze.width - w)
+            y = random.randint(0, maze.height - h)
+            for dy in range(h):
+                for dx in range(w):
+                    cell = maze.get_cell(x + dx, y + dy)
+
+                    if dx < w - 1 and not cell.is_fixed():
+                        right = maze.get_cell(x + dx + 1, y + dy)
+                        maze.remove_wall_between(cell, right)
+
+                    if dy < h - 1 and not cell.is_fixed():
+                        down = maze.get_cell(x + dx, y + dy + 1)
+                        maze.remove_wall_between(cell, down)
+        while attempts:
+            carve_one()
+            attempts -= 1
 
     def _generate_dfs(self, maze: Maze) -> None:
         # Algoritmo de generacion backtracking
@@ -66,6 +87,8 @@ class MazeGenerator:
                 stack.append(chosen_neighbor)
             else:
                 stack.pop()
+        if not maze.perfect:
+            self._carve_rooms(maze, 10)
 
     def _generate_prim(self, maze: Maze) -> None:
         if (self.__seed == 0):
