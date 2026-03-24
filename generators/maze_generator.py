@@ -26,6 +26,9 @@ class MazeGenerator:
         else:
             raise ValueError(f"Unknown algorithm: {algorithm}")
 
+    def _init_random(self):
+        random.seed(None if self.__seed == 0 else self.__seed)
+
     def _carve_rooms(self, maze: Maze, attempts: int = 20) -> None:
         room_sizes = [(2, 2), (2, 3), (3, 2)]
 
@@ -58,18 +61,14 @@ class MazeGenerator:
                         down = maze.get_cell(x + dx, y + dy + 1)
                         try_remove(cell, down)
 
-        while attempts:
+        for _ in range(attempts):
             carve_one()
-            attempts -= 1
 
     def _generate_dfs(self, maze: Maze) -> None:
         # Algoritmo de generacion backtracking
         # Va avanzando y mirando a los vecions aleatoriamente
         # abriendo paredes al azar
-        if (self.__seed == 0):
-            random.seed(None)
-        else:
-            random.seed(self.__seed)
+        self._init_random()
         rcellx = random.randint(0, maze.width - 1)
         rcelly = random.randint(0, maze.height - 1)
 
@@ -105,10 +104,7 @@ class MazeGenerator:
             self._carve_rooms(maze, 20)
 
     def _generate_prim(self, maze: Maze) -> None:
-        if (self.__seed == 0):
-            random.seed(None)
-        else:
-            random.seed(self.__seed)
+        self._init_random()
         directions = [(0, -1), (0, 1), (1, 0), (-1, 0)]
         check = True
         while check:
@@ -150,12 +146,11 @@ class MazeGenerator:
 
             current_cell.visited = True
             add_frontier_neighbors(current_cell)
+        if not maze.perfect:
+            self._carve_rooms(maze, 20)
 
     def _generate_kruskal(self, maze: Maze) -> None:
-        if (self.__seed == 0):
-            random.seed(None)
-        else:
-            random.seed(self.__seed)
+        self._init_random()
         edges = []
         for y in range(maze.height):
             for x in range(maze.width):
@@ -197,6 +192,8 @@ class MazeGenerator:
 
                 cell1.visited = True
                 cell2.visited = True
+        if not maze.perfect:
+            self._carve_rooms(maze, 20)
 
     def set_logo_42(self, maze: Maze) -> bool:
         if (maze.width < 9 or maze.height < 5):

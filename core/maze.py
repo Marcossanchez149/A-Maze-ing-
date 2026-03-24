@@ -32,7 +32,7 @@ class Maze:
 
     def get_neighbors(self, cell: Cell) -> List[Cell]:
         neighbors = []
-        for dx, dy in [(1,0), (-1,0), (0,1), (0,-1)]:
+        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             nx, ny = cell.x + dx, cell.y + dy
             if 0 <= nx < self.width and 0 <= ny < self.height:
                 neighbors.append(self.get_cell(nx, ny))

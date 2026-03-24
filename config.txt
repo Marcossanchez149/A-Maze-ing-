@@ -4,6 +4,6 @@ ENTRY=5,5
 EXIT=0,0
 OUTPUT_FILE=maze.txt
 PERFECT=false
-ALGORITHM=dfs
+ALGORITHM=kruskal
 DISPLAY=graphic
 SEED=0
