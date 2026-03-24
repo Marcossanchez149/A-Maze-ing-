@@ -1,30 +1,8 @@
-"""
-maze.py
-File that contains Maze class
-"""
-
 from core.cell import Cell
 from typing import Tuple, List
 
 
 class Maze:
-    """
-    Represents a rectangular maze with
-    configurable size, entry/exit points,
-    and optionally perfect maze properties
-    (no loops, single path between cells).
-
-    Attributes:
-        width (int): The number of columns in the maze.
-        height (int): The number of rows in the maze.
-        perfect (bool): If True, the maze will have no loops (default: True).
-        seed (int): Random seed for maze generation (default: 1).
-        entry (Tuple[int, int]): Coordinates of
-        the maze entry point (default: (0, 0)).
-        exit (Tuple[int, int]): Coordinates of the maze exit point
-        (default: bottom-right corner).
-        grid (List[List[Cell]]): 2D list of Cell objects representing the maze.
-    """
 
     def __init__(
         self,
@@ -35,21 +13,7 @@ class Maze:
         entry: Tuple[int, int] = (0, 0),
         exit: Tuple[int, int] = (0, 0)
     ) -> None:
-        """
-        Initializes a Maze instance with the given dimensions and options.
 
-        Args:
-            width (int): Number of columns in the maze.
-            height (int): Number of rows in the maze.
-            perfect (bool, optional): Whether the
-            maze is perfect (default: True).
-            seed (int, optional): Seed for random
-            number generation (default: 1).
-            entry (Tuple[int, int], optional): Entry point
-            coordinates (default: (0, 0)).
-            exit (Tuple[int, int], optional): Exit point coordinates
-                                              (default: bottom-right corner).
-        """
         self.width = width
         self.height = height
         self.perfect = perfect
@@ -62,69 +26,117 @@ class Maze:
         ]
 
     def get_cell(self, x: int, y: int) -> Cell:
-        """
-        Returns the Cell object at the specified coordinates.
-
-        Args:
-            x (int): Column index of the cell.
-            y (int): Row index of the cell.
-
-        Returns:
-            Cell: The cell located at (x, y).
-
-        Raises:
-            IndexError: If the coordinates are outside the maze boundaries.
-        """
         if not (0 <= x < self.width and 0 <= y < self.height):
             raise IndexError(f"Cell coordinates out of bounds: ({x}, {y})")
         return self.grid[y][x]
 
-    def remove_wall_between(self, cell1: Cell, cell2: Cell) -> None:
-        """
-        Removes the wall between two adjacent cells to create a passage,
-        ensuring consistency by removing the corresponding walls on both cells.
+    def get_neighbors(self, cell: Cell) -> List[Cell]:
+        neighbors = []
+        for dx, dy in [(1,0), (-1,0), (0,1), (0,-1)]:
+            nx, ny = cell.x + dx, cell.y + dy
+            if 0 <= nx < self.width and 0 <= ny < self.height:
+                neighbors.append(self.get_cell(nx, ny))
+        return neighbors
 
-        The method checks the relative position of the two cells and removes
-        the appropriate walls:
-        - If cell2 is to the right of cell1, remove the east wall of cell1
-        and the west wall of cell2.
-        - If cell2 is to the left of cell1, remove the west wall of cell1
-        and the east wall of cell2.
-        - If cell2 is below cell1, remove the south wall of cell1 and the
-        north wall of cell2.
-        - If cell2 is above cell1, remove the north wall of cell1 and the
-        south wall of cell2.
-
-        Args:
-            cell1 (Cell): The first cell.
-            cell2 (Cell): The second cell, adjacent to the first one.
-
-        Raises:
-            ValueError: If the two cells are not adjacent.
-        """
-
+    def has_wall_between(self, cell1: Cell, cell2: Cell) -> bool:
         dx = cell2.x - cell1.x
         dy = cell2.y - cell1.y
 
-        if dx == 1 and dy == 0:  # cell2 derecha
+        if dx == 1:
+            return cell1.has_wall("E")
+        elif dx == -1:
+            return cell1.has_wall("W")
+        elif dy == 1:
+            return cell1.has_wall("S")
+        elif dy == -1:
+            return cell1.has_wall("N")
+
+        return True
+
+    def remove_wall_between(self, cell1: Cell, cell2: Cell) -> None:
+        dx = cell2.x - cell1.x
+        dy = cell2.y - cell1.y
+
+        if dx == 1 and dy == 0:
             cell1.remove_wall("E")
             cell2.remove_wall("W")
-        elif dx == -1 and dy == 0:  # cell2 izquierda
+        elif dx == -1 and dy == 0:
             cell1.remove_wall("W")
             cell2.remove_wall("E")
-        elif dx == 0 and dy == 1:  # cell2 abajo
+        elif dx == 0 and dy == 1:
             cell1.remove_wall("S")
             cell2.remove_wall("N")
-        elif dx == 0 and dy == -1:  # cell2 arriba
+        elif dx == 0 and dy == -1:
             cell1.remove_wall("N")
             cell2.remove_wall("S")
         else:
             raise ValueError("Cells are not adjacent")
 
+    def add_wall_between(self, cell1: Cell, cell2: Cell) -> None:
+        dx = cell2.x - cell1.x
+        dy = cell2.y - cell1.y
+
+        if dx == 1:
+            cell1.add_wall("E")
+            cell2.add_wall("W")
+        elif dx == -1:
+            cell1.add_wall("W")
+            cell2.add_wall("E")
+        elif dy == 1:
+            cell1.add_wall("S")
+            cell2.add_wall("N")
+        elif dy == -1:
+            cell1.add_wall("N")
+            cell2.add_wall("S")
+
+    def has_open_area(self, w: int, h: int) -> bool:
+        for y in range(self.height - h + 1):
+            for x in range(self.width - w + 1):
+
+                open_area = True
+
+                # horizontales
+                for dy in range(h):
+                    for dx in range(w - 1):
+                        c1 = self.get_cell(x + dx, y + dy)
+                        c2 = self.get_cell(x + dx + 1, y + dy)
+
+                        if self.has_wall_between(c1, c2):
+                            open_area = False
+                            break
+                    if not open_area:
+                        break
+
+                if not open_area:
+                    continue
+
+                # verticales
+                for dy in range(h - 1):
+                    for dx in range(w):
+                        c1 = self.get_cell(x + dx, y + dy)
+                        c2 = self.get_cell(x + dx, y + dy + 1)
+
+                        if self.has_wall_between(c1, c2):
+                            open_area = False
+                            break
+                    if not open_area:
+                        break
+
+                if open_area:
+                    return True
+
+        return False
+
+    def has_invalid_room(self) -> bool:
+        forbidden = [(3, 3), (2, 4), (4, 2)]
+
+        for w, h in forbidden:
+            if self.has_open_area(w, h):
+                return True
+
+        return False
+
     def save_hex(self, file_path: str) -> None:
-        """
-        Save the maze in the same format as print_hex(), one row per line.
-        """
         with open(file_path, "w", encoding="utf-8") as f:
             for y in range(self.height):
                 row = ""
