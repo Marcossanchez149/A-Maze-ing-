@@ -17,8 +17,92 @@ make clean: Removes temporary files or caches (e.g., __pycache__, .mypy_cache).
 # Execution
 python3 a_maze_ing.py config.txt
 
+## Interactive commands:
 
-## Project Structure
+r: Regenerate maze
+p: Show/hide shortest path
+a: Toggle path animation
+c: Change wall color
+l: Toggle 42 logo color
+color: Toggle ANSI colors
+q: Quit
+
+# Pygame Renderer
+
+## Keyboard controls:
+
+R: Regenerate maze
+P: Show/hide shortest path
+C: Change wall color
+L: Toggle 42 logo coloring
+ESC: Exit
+
+## Keyboard controls:
+
+R: Regenerate maze
+P: Show/hide shortest path
+C: Change wall color
+L: Toggle 42 logo coloring
+ESC: Exit
+
+# AI Usage
+AI (ChatGPT) was used to:
+Review code and improve docstrings
+Learning comprehension
+General questions and suggestions
+
+# Configuration File
+
+The project saves maze solutions in a text file in the following format:
+
+<maze grid in hex representation>
+<entry_x>,<entry_y>
+<exit_x>,<exit_y>
+<directions string for shortest path>
+
+# Algorithm Choice
+
+The default generation algorithm is DFS / Backtracking, because:
+
+It is simple and easy to implement
+Produces perfect mazes with long winding paths
+Works efficiently for interactive visualization
+
+Optional algorithms (Prim, Kruskal) are available via configuration or command-line selection.
+
+# Reusability
+Maze, Cell, and solver functions (shortest_path, path_to_directions) are fully reusable in other maze or pathfinding projects.
+
+Renderers (AsciiRender, PygameRender) can be adapted to other grid-based visualizations or games.
+
+# Team and Project Management
+
+## Roles:
+marcsan2: Core maze generation, ASCII renderer, solver, README
+kpanfero: Pygame renderer, UI/UX design, testing, documentation, project management
+
+
+## Planning:
+Initial design: DFS maze generation
+Added extra algorithms (Prim/Kruskal) for flexibility
+Implemented interactive renderers sequentially
+Added logo overlay as a bonus feature
+Tools used:
+Python 3.10+
+Pygame
+Flake8 for linting
+Git and GitHub for version control
+AI assistant for code review and documentation
+Retrospective:
+What worked well: Modular design, interactive renderers
+Improvements: More advanced path animation and editor features could be added
+
+## Advanced Features
+Multiple algorithms selectable at runtime
+Interactive visualizations with color palettes
+Optional animated shortest path display
+Logo overlay integrated into maze generation
+# Project Structure
 
 ```text
 project/
