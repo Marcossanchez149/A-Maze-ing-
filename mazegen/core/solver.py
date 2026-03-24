@@ -1,26 +1,41 @@
-"""
-solver.py contains solvers
-"""
+"""Maze solving utilities."""
 
 from collections import deque
-from typing import Optional, List, Tuple, Dict
-from core.maze import Maze
+from typing import Dict, List, Optional, Tuple
+
+from mazegen.core.maze import Maze
 
 Pos = Tuple[int, int]
 
 
 def shortest_path(maze: Maze) -> Optional[List[Pos]]:
+    """Compute the shortest path in a maze using BFS.
+
+    This function finds the shortest path from the maze entry
+    to the exit using Breadth-First Search (BFS).
+
+    Args:
+        maze (Maze): Maze instance to solve.
+
+    Returns:
+        Optional[List[Pos]]: List of positions representing the path
+        from entry to exit, or None if no path exists.
+    """
     start = maze.entry
     goal = maze.exit
 
-    if maze.get_cell(*start).is_fixed() or maze.get_cell(*goal).is_fixed():
+    if (
+        maze.get_cell(*start).is_fixed()
+        or maze.get_cell(*goal).is_fixed()
+    ):
         return None
 
-    q = deque([start])
+    queue = deque([start])
     prev: Dict[Pos, Optional[Pos]] = {start: None}
 
-    while q:
-        x, y = q.popleft()
+    while queue:
+        x, y = queue.popleft()
+
         if (x, y) == goal:
             break
 
@@ -32,62 +47,90 @@ def shortest_path(maze: Maze) -> Optional[List[Pos]]:
             ("E", (x + 1, y)),
         ]
 
-        for d, (nx, ny) in candidates:
+        for direction, (nx, ny) in candidates:
             if not (0 <= nx < maze.width and 0 <= ny < maze.height):
                 continue
-            if cell.has_wall(d):
+
+            if cell.has_wall(direction):
                 continue
 
-            ncell = maze.get_cell(nx, ny)
-            if ncell.is_fixed():
+            neighbor = maze.get_cell(nx, ny)
+            if neighbor.is_fixed():
                 continue
 
-            np = (nx, ny)
-            if np in prev:
+            pos = (nx, ny)
+            if pos in prev:
                 continue
 
-            prev[np] = (x, y)
-            q.append(np)
+            prev[pos] = (x, y)
+            queue.append(pos)
 
     if goal not in prev:
         return None
 
     path: List[Pos] = []
-    cur: Optional[Pos] = goal
-    while cur is not None:
-        path.append(cur)
-        cur = prev[cur]
+    current: Optional[Pos] = goal
+
+    while current is not None:
+        path.append(current)
+        current = prev[current]
+
     path.reverse()
     return path
 
 
 def path_to_directions(path: List[Pos]) -> str:
+    """Convert a path into a string of directions.
+
+    Args:
+        path (List[Pos]): List of positions representing a path.
+
+    Returns:
+        str: String of directions (e.g., "NSWE").
+
+    Raises:
+        ValueError: If the path contains non-adjacent steps.
     """
-    Convert a path like [(x0,y0),(x1,y1),...] into directions string "NSWENSW".
-    """
-    dirs: List[str] = []
+    directions: List[str] = []
+
     for (x1, y1), (x2, y2) in zip(path, path[1:]):
         dx = x2 - x1
         dy = y2 - y1
+
         if dx == 1 and dy == 0:
-            dirs.append("E")
+            directions.append("E")
         elif dx == -1 and dy == 0:
-            dirs.append("W")
+            directions.append("W")
         elif dx == 0 and dy == 1:
-            dirs.append("S")
+            directions.append("S")
         elif dx == 0 and dy == -1:
-            dirs.append("N")
+            directions.append("N")
         else:
-            raise ValueError("Non-adjacent step in path:" +
-                             f" {(x1, y1)} -> {(x2, y2)}")
-    return "".join(dirs)
+            raise ValueError(
+                "Non-adjacent step in path: "
+                f"{(x1, y1)} -> {(x2, y2)}"
+            )
+
+    return "".join(directions)
 
 
-def save_solution(maze: Maze, path: Optional[List[Pos]],
-                  file_path: str) -> bool:
-    """
-    Compute shortest path and save it as a directions string, e.g. "NSWENSW".
-    Returns True if saved, False if no solution.
+def save_solution(
+    maze: Maze,
+    path: Optional[List[Pos]],
+    file_path: str,
+) -> bool:
+    """Save the maze solution to a file.
+
+    The maze is first saved in hexadecimal format, followed by
+    the shortest path encoded as a direction string.
+
+    Args:
+        maze (Maze): Maze instance.
+        path (Optional[List[Pos]]): Path to save.
+        file_path (str): Output file path.
+
+    Returns:
+        bool: True if the solution was saved, False otherwise.
     """
     if not path:
         return False
@@ -95,6 +138,8 @@ def save_solution(maze: Maze, path: Optional[List[Pos]],
     maze.save_hex(file_path)
 
     directions = path_to_directions(path)
-    with open(file_path, "a", encoding="utf-8") as f:
-        f.write(directions)
+
+    with open(file_path, "a", encoding="utf-8") as file:
+        file.write(directions)
+
     return True

@@ -1,18 +1,41 @@
+"""ASCII-based renderer for maze visualization."""
+
 import time
 from typing import List, Optional, Tuple
 
-from core.maze import Maze
-from core.solver import shortest_path, save_solution
-from .render import Render
-
+from mazegen.core.maze import Maze
+from mazegen.core.solver import shortest_path, save_solution
 from mazegen.maze_generator import MazeGenerator, InvalidEntryOrExit
+
+from .render import Render
 
 Pos = Tuple[int, int]
 
 
 class AsciiRender(Render):
+    """Render a maze in the terminal using ASCII characters.
+
+    This renderer provides an interactive command-line interface
+    to visualize and interact with a maze. It supports features such as
+    path visualization, color toggling, and animation.
+
+    Attributes:
+        file_path (str): Output file where the solution is saved.
+        show_path (bool): Whether to display the shortest path.
+        use_color (bool): Enable or disable ANSI colors.
+        colorize_logo_42 (bool): Toggle coloring for fixed cells.
+        animate_path (bool): Enable path animation.
+        path_delay (float): Delay between animation steps (seconds).
+    """
+
     def __init__(self, file_path: str) -> None:
+        """Initialize the ASCII renderer.
+
+        Args:
+            file_path (str): Path to save the solution file.
+        """
         self.file_path = file_path
+
         # toggles
         self.show_path = False
         self.use_color = True
@@ -20,7 +43,7 @@ class AsciiRender(Render):
 
         # animation
         self.animate_path = True
-        self.path_delay = 0.02  # seconds per step
+        self.path_delay = 0.02
 
         # wall color palettes (ANSI)
         self.wall_palettes = [
@@ -34,8 +57,8 @@ class AsciiRender(Render):
 
         # extra colors
         self.reset = "\x1b[0m"
-        self.logo_42_color = "\x1b[35m"  # magenta
-        self.path_color = "\x1b[93m"     # bright yellow
+        self.logo_42_color = "\x1b[35m"
+        self.path_color = "\x1b[93m"
 
         self._cached_path: Optional[List[Pos]] = None
 
@@ -48,16 +71,27 @@ class AsciiRender(Render):
         seed: int = 1,
         apply_logo_42: bool = False,
     ) -> None:
-        """
-        Interactive ASCII loop:
-          r = regenerate
-          p = show/hide shortest path (animated if enabled)
-          c = change wall color
-          l = toggle 42 color
-          a = toggle path animation
-          q = quit
+        """Start the interactive ASCII rendering loop.
+
+        Supported commands:
+            r: regenerate maze
+            p: toggle shortest path display
+            a: toggle path animation
+            c: change wall color
+            l: toggle logo color
+            color: toggle ANSI colors
+            q: quit
+
+        Args:
+            maze (Maze): Maze to render.
+            generator (MazeGenerator): Maze generator instance.
+            algorithm (str, optional): Generation algorithm.
+                Defaults to "dfs".
+            seed (int, optional): Random seed. Defaults to 1.
+            apply_logo_42 (bool, optional): Apply logo overlay.
         """
         save_solution(maze, shortest_path(maze), self.file_path)
+
         while True:
             self._clear()
 
@@ -71,8 +105,10 @@ class AsciiRender(Render):
             self._print_menu()
 
             cmd = input("> ").strip().lower()
+
             if cmd in ("q", "quit", "exit"):
                 return
+
             if cmd == "r":
                 new_maze = Maze(
                     width=maze.width,
@@ -92,11 +128,20 @@ class AsciiRender(Render):
                 generator.generate_maze(new_maze, algorithm)
                 maze = new_maze
                 self._cached_path = None
-                save_solution(maze, shortest_path(maze), self.file_path)
+
+                save_solution(
+                    maze,
+                    shortest_path(maze),
+                    self.file_path,
+                )
+
                 if self.show_path:
                     self._cached_path = shortest_path(maze)
                     if self.animate_path and self._cached_path:
-                        self._animate_path_once(maze, self._cached_path)
+                        self._animate_path_once(
+                            maze,
+                            self._cached_path,
+                        )
 
             elif cmd == "p":
                 self.show_path = not self.show_path
@@ -104,15 +149,21 @@ class AsciiRender(Render):
                 if self.show_path:
                     self._cached_path = shortest_path(maze)
                     if self.animate_path and self._cached_path:
-                        self._animate_path_once(maze, self._cached_path)
-                # if turning off, nothing special
+                        self._animate_path_once(
+                            maze,
+                            self._cached_path,
+                        )
 
             elif cmd == "c":
-                self.wall_palette_index = ((self.wall_palette_index + 1) %
-                                           len(self.wall_palettes))
+                self.wall_palette_index = (
+                    (self.wall_palette_index + 1)
+                    % len(self.wall_palettes)
+                )
 
             elif cmd == "l":
-                self.colorize_logo_42 = not self.colorize_logo_42
+                self.colorize_logo_42 = (
+                    not self.colorize_logo_42
+                )
 
             elif cmd in ("color", "ansi"):
                 self.use_color = not self.use_color
@@ -120,16 +171,31 @@ class AsciiRender(Render):
             elif cmd == "a":
                 self.animate_path = not self.animate_path
 
-    def draw_maze(self, maze: Maze, *,
-                  path: Optional[List[Pos]] = None) -> None:
+    def draw_maze(
+        self,
+        maze: Maze,
+        *,
+        path: Optional[List[Pos]] = None,
+    ) -> None:
+        """Draw the maze in ASCII format.
+
+        Args:
+            maze (Maze): Maze to render.
+            path (Optional[List[Pos]]): Optional path to highlight.
+        """
         path_set = set(path or [])
 
-        wall_color = self.wall_palettes[self.wall_palette_index] if (
-            self.use_color) else ""
+        wall_color = (
+            self.wall_palettes[self.wall_palette_index]
+            if self.use_color else ""
+        )
         reset = self.reset if self.use_color else ""
         path_color = self.path_color if self.use_color else ""
-        logo_color = (self.logo_42_color if (self.use_color and
-                                             self.colorize_logo_42) else "")
+        logo_color = (
+            self.logo_42_color
+            if (self.use_color and self.colorize_logo_42)
+            else ""
+        )
 
         def w(s: str) -> str:
             return f"{wall_color}{s}{reset}" if self.use_color else s
@@ -140,29 +206,29 @@ class AsciiRender(Render):
         def pch(s: str) -> str:
             return f"{path_color}{s}{reset}" if self.use_color else s
 
-        # --- top border ---
         top_line = w("+")
         for x in range(maze.width):
             cell = maze.get_cell(x, 0)
             if cell.is_fixed():
                 top_line += logo("---") + w("+")
             else:
-                top_line += w("---+") if cell.has_wall("N") else w("   +")
+                top_line += (
+                    w("---+") if cell.has_wall("N") else w("   +")
+                )
         print(top_line)
 
-        # --- rows ---
         for y in range(maze.height):
             middle_line = ""
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
 
-                # left wall
                 if cell.is_fixed():
                     middle_line += w("|")
                 else:
-                    middle_line += w("|") if cell.has_wall("W") else " "
+                    middle_line += (
+                        w("|") if cell.has_wall("W") else " "
+                    )
 
-                # content
                 pos = (x, y)
                 if pos == maze.entry:
                     middle_line += " x "
@@ -171,29 +237,38 @@ class AsciiRender(Render):
                 elif pos in path_set and not cell.is_fixed():
                     middle_line += pch(" . ")
                 else:
-                    if cell.is_fixed():
-                        middle_line += logo("***")
-                    else:
-                        middle_line += "   "
+                    middle_line += (
+                        logo("***") if cell.is_fixed() else "   "
+                    )
 
             last_cell = maze.get_cell(maze.width - 1, y)
-            middle_line += w("|") if last_cell.has_wall("E") else " "
+            middle_line += (
+                w("|") if last_cell.has_wall("E") else " "
+            )
             print(middle_line)
 
-            # bottom border
             bottom_line = w("+")
             for x in range(maze.width):
                 cell = maze.get_cell(x, y)
                 if cell.is_fixed():
                     bottom_line += logo("---") + w("+")
                 else:
-                    bottom_line += w("---+") if (
-                        cell.has_wall("S")) else w("   +")
+                    bottom_line += (
+                        w("---+") if cell.has_wall("S")
+                        else w("   +")
+                    )
             print(bottom_line)
 
-    def _animate_path_once(self, maze: Maze, path: List[Pos]) -> None:
-        """
-        Reveal the path progressively (ASCII animation).
+    def _animate_path_once(
+        self,
+        maze: Maze,
+        path: List[Pos],
+    ) -> None:
+        """Animate the path step-by-step in the terminal.
+
+        Args:
+            maze (Maze): Maze to render.
+            path (List[Pos]): Path to animate.
         """
         for k in range(1, len(path) + 1):
             self._clear()
@@ -202,13 +277,14 @@ class AsciiRender(Render):
             time.sleep(self.path_delay)
 
     def _print_menu(self) -> None:
+        """Display available user commands."""
         print()
         print(
-            "Commands: [r] regenerate | [p] path"
-            " on/off | [a] path anim on/off | "
-            "[c] wall color | [l] 42 color | [color] ansi on/off | [q] quit"
+            "Commands: [r] regenerate | [p] path on/off | "
+            "[a] path anim on/off | [c] wall color | "
+            "[l] 42 color | [color] ansi on/off | [q] quit"
         )
 
     def _clear(self) -> None:
-        # ANSI clear screen + cursor home
+        """Clear the terminal screen using ANSI escape codes."""
         print("\x1b[2J\x1b[H", end="")

@@ -43,9 +43,20 @@ class Cell:
         self.__is_fixed = False
 
     def set_as_fixed(self) -> None:
+        """Mark the cell as fixed (non-modifiable).
+
+        Fixed cells are typically used for special patterns
+        (e.g., logos) and should not be altered during maze
+        generation or solving.
+        """
         self.__is_fixed = True
 
     def is_fixed(self) -> bool:
+        """Check whether the cell is fixed.
+
+        Returns:
+            bool: True if the cell is fixed, False otherwise.
+        """
         return self.__is_fixed
 
     def _get_mask(self, direction: str) -> int:
