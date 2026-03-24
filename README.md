@@ -76,3 +76,13 @@ source environment/bin/activate
 python -m pip install pygame
 
 python3 -m a_maze_ing
+
+
+
+
+crear paquete en venv hacemos 
+pip install build
+python -m build
+pip install dist/mazegen-1.0.0-py3-none-any.whl
+para comprobar que se ha instalado , solo hay que borrar todas las carpetas 
+core mazegen render etc y hacer make run
