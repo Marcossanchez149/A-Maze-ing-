@@ -71,9 +71,14 @@ Works efficiently for interactive visualization
 Optional algorithms (Prim, Kruskal) are available via configuration or command-line selection.
 
 # Reusability
-Maze, Cell, and solver functions (shortest_path, path_to_directions) are fully reusable in other maze or pathfinding projects.
+mazegen folder is reusable: all maze generation logic.
 
-Renderers (AsciiRender, PygameRender) can be adapted to other grid-based visualizations or games.
+pip install build
+python -m build
+pip install dist/mazegen-1.0.0-py3-none-any.whl
+
+To test if its installed just need to remove the folder which has been put into 
+the package and make run
 
 # Team and Project Management
 
@@ -102,18 +107,19 @@ Multiple algorithms selectable at runtime
 Interactive visualizations with color palettes
 Optional animated shortest path display
 Logo overlay integrated into maze generation
+
 # Project Structure
 
 ```text
 project/
-├── core/
-│   ├── __init__.py
-│   ├── cell.py
-│   ├── constants.py
-│   ├── maze.py
-│   └── solver.py
-├── generators/
-│   ├── maze_generator.py        
+├── mazegen/
+│   ├── maze_generator.py 
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── cell.py
+│   │   ├── constants.py
+│   │   ├── maze.py
+│   │   └── solver.py       
 ├── render/
 │   ├── __init__.py
 │   ├── render.py             
@@ -126,8 +132,10 @@ project/
 │   ├── types.py
 │   └── validator.py
 ├── a_maze_ing.py
+├── pyproject.toml
 ├── config.txt
 ├── .gitignore
+├── README.md
 ├── requirements.txt
 └── makefile
 
@@ -151,22 +159,3 @@ project/
 | 1101    | 13      | 0xD         | W, S, N            |
 | 1110    | 14      | 0xE         | W, S, E            |
 | 1111    | 15      | 0xF         | -All- (W, S, E, N) |
-
-
-python3 -m venv environment
-
-source environment/bin/activate
-
-python -m pip install pygame
-
-python3 -m a_maze_ing
-
-
-
-
-crear paquete en venv hacemos 
-pip install build
-python -m build
-pip install dist/mazegen-1.0.0-py3-none-any.whl
-para comprobar que se ha instalado , solo hay que borrar todas las carpetas 
-core mazegen render etc y hacer make run
