@@ -4,7 +4,7 @@ from typing import Tuple, cast
 from config.parser import parse_config_file
 from config.validator import validate_config
 from core.maze import Maze
-from generators.maze_generator import MazeGenerator
+from mazegen.maze_generator import MazeGenerator
 from render import AsciiRender, PygameRender
 import sys
 

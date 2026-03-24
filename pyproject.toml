@@ -11,4 +11,4 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["mazegen", "config", "render", "core"]
+packages = ["mazegen"]

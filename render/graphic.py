@@ -9,7 +9,7 @@ import pygame
 from core.maze import Maze
 from core.solver import shortest_path, save_solution
 from .render import Render
-from generators.maze_generator import MazeGenerator, InvalidEntryOrExit
+from mazegen.maze_generator import MazeGenerator, InvalidEntryOrExit
 
 Pos = Tuple[int, int]
 
