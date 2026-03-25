@@ -248,7 +248,7 @@ class MazeGenerator:
         Raises:
             InvalidEntryOrExit: If entry/exit overlaps the logo.
         """
-        if maze.width < 9 or maze.height < 5:
+        if maze.width < 9 or maze.height < 7:
             print("Size not enough for the 42 logo")
             return False
 
