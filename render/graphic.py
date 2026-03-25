@@ -4,8 +4,8 @@ from typing import List, Optional, Tuple
 
 import pygame
 
-from mazegen.core.maze import Maze
-from mazegen.core.solver import shortest_path, save_solution
+from mazegen.maze import Maze
+from mazegen.solver import shortest_path, save_solution
 from mazegen.maze_generator import MazeGenerator, InvalidEntryOrExit
 
 from .render import Render

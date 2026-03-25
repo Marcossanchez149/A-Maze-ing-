@@ -3,7 +3,7 @@
 from collections import deque
 from typing import Dict, List, Optional, Tuple
 
-from mazegen.core.maze import Maze
+from mazegen.maze import Maze
 
 Pos = Tuple[int, int]
 

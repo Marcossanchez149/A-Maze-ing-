@@ -1,5 +1,12 @@
 from .maze_generator import MazeGenerator, InvalidEntryOrExit
-from mazegen.core.maze import Maze
-from mazegen.core.cell import Cell
+from .maze import Maze
+from .cell import Cell
+from .constants import WALL_MASKS
 
-__all__ = ['MazeGenerator', 'InvalidEntryOrExit', "Maze", "Cell"]
+__all__ = ["Cell",
+           "Maze",
+           "WALL_MASKS",
+           'MazeGenerator',
+           'InvalidEntryOrExit',
+           "Maze",
+           "Cell"]

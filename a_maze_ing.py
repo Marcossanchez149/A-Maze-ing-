@@ -3,7 +3,7 @@
 from typing import Tuple, cast
 from config.parser import parse_config_file
 from config.validator import validate_config
-from mazegen.core.maze import Maze
+from mazegen.maze import Maze
 from mazegen.maze_generator import MazeGenerator
 from render import AsciiRender, PygameRender
 import sys

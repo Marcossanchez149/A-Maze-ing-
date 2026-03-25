@@ -3,8 +3,8 @@
 import random
 from typing import Dict, List, Tuple
 
-from mazegen.core.cell import Cell
-from mazegen.core.maze import Maze
+from .cell import Cell
+from .maze import Maze
 
 
 class InvalidEntryOrExit(Exception):

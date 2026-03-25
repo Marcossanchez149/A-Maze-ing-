@@ -2,7 +2,7 @@
 
 from typing import List, Tuple
 
-from mazegen.core.cell import Cell
+from .cell import Cell
 
 
 class Maze:
